@@ -1,0 +1,175 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>repo&utilisation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #fff !important;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      max-width: 480px;
+      /* margin: 60px auto; */
+      background: #f1d677;
+      padding: 36px;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(44, 62, 80, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #808080;
+      font-weight: 500;
+      letter-spacing: 1px;
+      margin: 0;
+      padding: 0;
+    }
+    h2 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      margin: 12px 0 20px 0;
+      border: 1px solid #dbeafe;
+      border-radius: 7px;
+      background: #f8fafc;
+      font-size: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 14px 0;
+      font-size: 17px;
+      background: #808080;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+    }
+    button:hover {
+      background: linear-gradient(90deg, #b5b265 0%, #b8ab68 100%);
+    }
+    .note {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #6b7280;
+      text-align: center;
+    }
+    .fullpage {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #fff !important;
+    }
+    /* #fileInput{
+      width:35.5vw;
+    } */
+    .logo-img {
+      width: 200px;
+      height: auto;
+      margin-bottom: 1px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .alert {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .alert.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .alert.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    form {
+      background: #f1d677;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    #excel_file{
+    width:96%;
+    }
+
+    
+  </style>
+</head>
+<body>
+  <div class="fullpage d-flex justify-content-center align-items-center">
+  
+    <img src="{{ url_for('static', filename='images/logo3.png') }}" alt="Logo" class="logo-img">
+  
+
+  <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+    <label for="username">USERNAME:</label>
+    <input type="text" name="username" id="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+
+    <label for="excel_file">Excel File:</label>
+    <input type="file" name="excel_file" id="excel_file" accept=".xlsx" required>
+
+    <button type="submit" id="start_process_btn">Start Process</button>
+  </form>
+  </div>
+  <script>
+    
+    // Basic form validation
+    document.getElementById('uploadForm').addEventListener('submit', function (event) {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        alert('Username and Password cannot be empty.');
+        event.preventDefault();
+      }
+    });
+
+  </script>
+</body>
+</html>
