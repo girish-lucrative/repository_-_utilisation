@@ -7,6 +7,7 @@ from selenium.common.exceptions import (StaleElementReferenceException,
                                       NoSuchElementException)
 from datetime import datetime
 from datetime import timedelta
+from selenium.webdriver.common.action_chains import ActionChains
 import time
 import os
 import logging
@@ -338,7 +339,103 @@ class CertificateBot:
                             df.to_excel(file_path, index=False)
                             
                             print(f"💾 Data saved to: {file_path}")
-                                       
+
+                time.sleep(1)
+                self.driver.refresh()  
+                time.sleep(1)
+                repo = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='EPCG']"))
+                )
+                repo.click()
+                print("✅ Clicked on EPCG")
+
+                repo = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, "//h5[normalize-space()='Closure of EPCG/Issuance of Post Export Scrip']"))
+                )
+                repo.click()
+                print("✅ Clicked on closure of EPCG")
+                time.sleep(1)
+
+                repo = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[@id='btnNewApp']"))
+                )
+                repo.click()
+                print("Start fresh application")
+
+                wait = WebDriverWait(self.driver, 15)
+                dropdown = wait.until(EC.element_to_be_clickable((By.ID, "applicationFor")))
+                dropdown.click()
+                option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='REDEMPTION']")))
+                option.click()
+                time.sleep(1)
+
+                auth_closure = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="custom-accordion"]/div[2]/div[1]/a'))
+                )
+                auth_closure.click()
+                print("Auth closure")
+                
+
+                
+                
+                # EPCG Authorization Number to match
+                target_auth_no = row.get("Authorisation Number")
+                
+
+                # Wait for the table to be visible
+                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.dataTables_scrollBody")))
+                
+                found = False
+                page = 1
+                
+                while True:
+                    try:
+                        # Find the cell containing the EPCG Authorization Number
+                        cell_xpath = f"//div[@class='dataTables_scrollBody']//table//td[normalize-space()='{target_auth_no}']"
+                        target_cell = self.driver.find_element(By.XPATH, cell_xpath)
+                
+                        # Scroll the cell into view
+                        self.driver.execute_script("arguments[0].scrollIntoView(true);", target_cell)
+                        time.sleep(1)
+                
+                        # Get the parent row and click its radio button
+                        parent_row = target_cell.find_element(By.XPATH, "./ancestor::tr")
+                        radio_button = parent_row.find_element(By.CSS_SELECTOR, "input[type='radio']")
+                        self.driver.execute_script("arguments[0].click();", radio_button)
+                
+                        print(f"✅ Selected EPCG Authorization Number: {target_auth_no}")
+                        found = True
+                        break
+                
+                    except Exception:
+                        # Check for next page if not found
+                        try:
+                            next_button = self.driver.find_element(By.ID, "epcgauthTbl_next")
+                            if "disabled" in next_button.get_attribute("class"):
+                                break  # No more pages left
+                            self.driver.execute_script("arguments[0].click();", next_button)
+                            page += 1
+                            print(f"🔁 Searching on page {page}...")
+                            time.sleep(2)
+                        except:
+                            break
+                
+                if not found:
+                    print(f"❌ Target EPCG Authorization Number {target_auth_no} not found in any page.")
+                
+                prd_val = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="eoPending"]/div/div/div[2]/div/div/div[1]/label'))
+                )
+                prd_val.click()
+                nxt = wait.until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
+                )
+                nxt.click()
+
+
+                
+                
+
             else:
                 time.sleep(2)
     
