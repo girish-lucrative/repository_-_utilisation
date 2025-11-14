@@ -176,7 +176,7 @@ class CertificateBot:
                 
                 for i in range(2):
                     
-                    wait = WebDriverWait(self.driver, 15)
+                    wait = WebDriverWait(self.driver, 100)
                     dropdown = wait.until(EC.element_to_be_clickable((By.ID, "txt_selectBill")))
                     dropdown.click()
                     time.sleep(1)
@@ -251,13 +251,15 @@ class CertificateBot:
                             print("table shown")
                             
                             all_rows = []
-                            
+                            i=1
                             while True:
+                                
                                 # Wait for the table body to load
                                 wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billRepositoryTable tbody tr")))
                             
                                 rows = self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable tbody tr")
-                                print(f"Found {len(rows)} rows on this page")
+                                print(f"Found {len(rows)} rows on this page - {i}")
+                                
                             
                                 for r in rows:
                                     cols = r.find_elements(By.TAG_NAME, "td")
@@ -267,7 +269,13 @@ class CertificateBot:
                             
                                 # Try to find "Next" button and check if it is enabled
                                 try:
-                                    next_btn = self.driver.find_element(By.ID, "billRepositoryTable_next")
+                                    self.driver.execute_script("window.scrollBy(0, -300);")
+                                    time.sleep(0.5)
+                                    self.driver.execute_script("window.scrollBy(0, 300);")
+                                    time.sleep(0.5)
+                                    wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="billRepositoryTable_next"]/a')))
+                                    next_btn = self.driver.find_element(By.XPATH, '//*[@id="billRepositoryTable_next"]/a')
+                                    time.sleep(1)
                                     next_class = next_btn.get_attribute("class")
                                     if "disabled" in next_class:
                                         print("✅ No more pages. Extraction complete.")
@@ -275,10 +283,31 @@ class CertificateBot:
                                     else:
                                         self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
                                         next_btn.click()
-                                        time.sleep(2)  # Wait for next page data to load
+                                        time.sleep(2)
+                                        i+=1  # Wait for next page data to load
                                 except Exception as e:
                                     print("⚠️ Pagination ended or not found:", e)
-                                    break
+                                    if len(rows)==10:
+                                        popup_click = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="CancelOk"]')))
+                                        popup_click.click()
+                                        print("popup handled")
+                                        time.sleep(1)
+                                        wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="billRepositoryTable_next"]/a')))
+                                        
+                                        next_btn = self.driver.find_element(By.XPATH, '//*[@id="billRepositoryTable_next"]/a')
+                                        next_class = next_btn.get_attribute("class")
+                                        if "disabled" in next_class:
+                                            print("✅ No more pages. Extraction complete.")
+                                            break
+                                        else:
+                                            self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+                                            next_btn.click()
+                                            time.sleep(2)
+                                            i+=1
+                                        continue
+                                    else:
+                                        print("all data done")
+                                        break
                             
                             # --- Extract headers ---
                             headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable thead th")]
@@ -322,6 +351,9 @@ class CertificateBot:
                             
                                 # --- Handle Pagination ---
                                 try:
+                                    self.driver.execute_script("window.scrollBy(0, -100);")
+                                    self.driver.execute_script("window.scrollBy(0, 100);")
+                                    wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
                                     next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
                                     next_class = next_btn.get_attribute("class")
                                     if "disabled" in next_class:
@@ -419,6 +451,9 @@ class CertificateBot:
                     except Exception:
                         # Check for next page if not found
                         try:
+                            self.driver.execute_script("window.scrollBy(0, -100);")
+                            self.driver.execute_script("window.scrollBy(0, 100);")
+                            wait.until(EC.presence_of_element_located((By.ID, "epcgauthTbl_next")))
                             next_button = self.driver.find_element(By.ID, "epcgauthTbl_next")
                             if "disabled" in next_button.get_attribute("class"):
                                 break  # No more pages left
@@ -646,6 +681,9 @@ class CertificateBot:
                         
                         # Check for next page
                         try:
+                            self.driver.execute_script("window.scrollBy(0, -100);")
+                            self.driver.execute_script("window.scrollBy(0, 100);")
+                            wait.until(EC.presence_of_element_located((By.ID, "closureImportItemTbl_next")))
                             next_button = self.driver.find_element(By.ID, "closureImportItemTbl_next")
                             if "disabled" in next_button.get_attribute("class"):
                                 print("Last page reached")
@@ -856,6 +894,9 @@ class CertificateBot:
                         
                         # Check for next page
                         try:
+                            self.driver.execute_script("window.scrollBy(0, -100);")
+                            self.driver.execute_script("window.scrollBy(0, 100);")
+                            wait.until(EC.presence_of_element_located((By.ID, "closureExportItemTbl_next")))
                             next_button = self.driver.find_element(By.ID, "closureExportItemTbl_next")
                             if "disabled" in next_button.get_attribute("class"):
                                 print("Last page reached")
@@ -1117,6 +1158,9 @@ class CertificateBot:
                         
                         # Check for next page
                         try:
+                            self.driver.execute_script("window.scrollBy(0, -100);")
+                            self.driver.execute_script("window.scrollBy(0, 100);")
+                            wait.until(EC.presence_of_element_located((By.ID, "sbBankRealiseTbl_next")))
                             next_button = self.driver.find_element(By.ID, "sbBankRealiseTbl_next")
                             if "disabled" in next_button.get_attribute("class"):
                                 print("Last page reached")
@@ -1310,6 +1354,9 @@ class CertificateBot:
                             
                                 # Try to find "Next" button and check if it is enabled
                                 try:
+                                    self.driver.execute_script("window.scrollBy(0, -100);")
+                                    self.driver.execute_script("window.scrollBy(0, 100);")
+                                    wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable_next")))
                                     next_btn = self.driver.find_element(By.ID, "billRepositoryTable_next")
                                     next_class = next_btn.get_attribute("class")
                                     if "disabled" in next_class:
@@ -1365,6 +1412,9 @@ class CertificateBot:
                             
                                 # --- Handle Pagination ---
                                 try:
+                                    self.driver.execute_script("window.scrollBy(0, -100);")
+                                    self.driver.execute_script("window.scrollBy(0, 100);")
+                                    wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
                                     next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
                                     next_class = next_btn.get_attribute("class")
                                     if "disabled" in next_class:
@@ -1487,6 +1537,9 @@ class CertificateBot:
                 
                     # find next page button
                     try:
+                        self.driver.execute_script("window.scrollBy(0, -100);")
+                        self.driver.execute_script("window.scrollBy(0, 100);")
+                        wait.until(EC.presence_of_element_located((By.ID, "exportShippingGstBillTbl_next")))
                         next_btn = self.driver.find_element(By.ID, "exportShippingGstBillTbl_next")
                         # if disabled → last page
                         if "disabled" in next_btn.get_attribute("class"):
@@ -1541,7 +1594,9 @@ class CertificateBot:
                         cols = r.find_elements(By.XPATH, "./td")
                         importer_row = [c.get_attribute("innerText").strip() for c in cols]
                         importer_all_rows.append(importer_row)
-                
+                    self.driver.execute_script("window.scrollBy(0, -100);")
+                    self.driver.execute_script("window.scrollBy(0, 100);")
+                    wait.until(EC.presence_of_element_located((By.XPATH, f"//li[@id='{table_id}_next']")))
                     next_btn = self.driver.find_element(By.XPATH, f"//li[@id='{table_id}_next']")
                 
                     if "disabled" in next_btn.get_attribute("class"):
@@ -1644,6 +1699,10 @@ class CertificateBot:
                 
                     # Check for next button
                     try:
+                        self.driver.execute_script("window.scrollBy(0, -100);")
+                        self.driver.execute_script("window.scrollBy(0, 100);")
+                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                            "#exportItemsTable_paginate .paginate_button.next")))
                         next_btn = self.driver.find_element(
                             By.CSS_SELECTOR,
                             "#exportItemsTable_paginate .paginate_button.next"
@@ -1702,6 +1761,10 @@ class CertificateBot:
                 
                     # pagination: strict next button
                     try:
+                        self.driver.execute_script("window.scrollBy(0, -100);")
+                        self.driver.execute_script("window.scrollBy(0, 100);")
+                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                            "#inputItemsGSTTable_paginate .paginate_button.next a")))
                         next_btn = self.driver.find_element(
                             By.CSS_SELECTOR,
                             "#inputItemsGSTTable_paginate .paginate_button.next a"
@@ -1758,6 +1821,10 @@ class CertificateBot:
                         c_all_rows.append(c_cols)
                 
                     try:
+                        self.driver.execute_script("window.scrollBy(0, -100);")
+                        self.driver.execute_script("window.scrollBy(0, 100);")
+                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                            "#ImporterExporterTable_paginate .paginate_button.next")))
                         next_btn = self.driver.find_element(
                             By.CSS_SELECTOR,
                             "#ImporterExporterTable_paginate .paginate_button.next"
