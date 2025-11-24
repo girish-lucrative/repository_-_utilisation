@@ -142,6 +142,7 @@ class CertificateBot:
         try:
             print(1)
             time.sleep(1)
+            
             row = self.excel_data[self.current_index]
             if self.current_index==0:
 
@@ -151,1296 +152,1308 @@ class CertificateBot:
                 print("Navigating to certificate section...")
                 time.sleep(1)
                 
-                # Try to find and click on Advanced Authorization
-                my_dashboard = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="200928"]/a'))
-                )
-                my_dashboard.click()
-                print("✅ Clicked on my dashboard")
-                repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="98000023"]/a'))
-                )
-                repo.click()
-                print("✅ Clicked on repositories")
-                time.sleep(1)
-                self.driver.execute_script("document.body.style.zoom='80%'")
-                time.sleep(0.5)
-                self.driver.execute_script("document.body.style.zoom='60%'")
-                time.sleep(0.5)
+            #     # Try to find and click on Advanced Authorization
+            #     my_dashboard = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="200928"]/a'))
+            #     )
+            #     my_dashboard.click()
+            #     print("✅ Clicked on my dashboard")
+            #     repo = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="98000023"]/a'))
+            #     )
+            #     repo.click()
+            #     print("✅ Clicked on repositories")
+            #     time.sleep(1)
+            #     self.driver.execute_script("document.body.style.zoom='80%'")
+            #     time.sleep(0.5)
+            #     self.driver.execute_script("document.body.style.zoom='60%'")
+            #     time.sleep(0.5)
     
-                Bill_repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="content"]/div[3]/div/div[2]/div[1]/div/a'))
-                )
-                Bill_repo.click()
-                print("✅ Clicked on Bill repositories")
+            #     Bill_repo = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="content"]/div[3]/div/div[2]/div[1]/div/a'))
+            #     )
+            #     Bill_repo.click()
+            #     print("✅ Clicked on Bill repositories")
                 
-                for i in range(2):
+            #     for i in range(2):
                     
-                    wait = WebDriverWait(self.driver, 100)
-                    dropdown = wait.until(EC.element_to_be_clickable((By.ID, "txt_selectBill")))
-                    dropdown.click()
-                    time.sleep(1)
+            #         wait = WebDriverWait(self.driver, 100)
+            #         dropdown = wait.until(EC.element_to_be_clickable((By.ID, "txt_selectBill")))
+            #         dropdown.click()
+            #         time.sleep(1)
 
-                    if i==0:
+            #         if i==0:
                     
-                       # Select by visible text using XPath
-                       option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Shipping Bill']")))
-                       option.click()
-                       time.sleep(2)
-                       print("select shipping bill")
+            #            # Select by visible text using XPath
+            #            option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Shipping Bill']")))
+            #            option.click()
+            #            time.sleep(2)
+            #            print("select shipping bill")
 
-                    else:
-                        # Select by visible text using XPath
-                       option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Bill of Entry']")))
-                       option.click()
-                       time.sleep(2)
-                       print("select Bill of Entry")
+            #         else:
+            #             # Select by visible text using XPath
+            #            option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Bill of Entry']")))
+            #            option.click()
+            #            time.sleep(2)
+            #            print("select Bill of Entry")
     
-                    for idx, row in enumerate(self.excel_data):
-                        print(row)
+            #         for idx, row in enumerate(self.excel_data):
+            #             print(row)
                     
-                        # --- Fix: handle pandas Timestamp directly ---
-                        shipping_date = row.get("EPCG Shipping Bill Date")
-                        if pd.isna(shipping_date):
-                            print(f"Skipping Row {idx + 1}: No Shipping Bill Date found")
-                            continue
+            #             # --- Fix: handle pandas Timestamp directly ---
+            #             shipping_date = row.get("EPCG Shipping Bill Date")
+            #             if pd.isna(shipping_date):
+            #                 print(f"Skipping Row {idx + 1}: No Shipping Bill Date found")
+            #                 continue
                     
-                        # Ensure it's a datetime object
-                        if isinstance(shipping_date, pd.Timestamp):
-                            shipping_date = shipping_date.to_pydatetime()
+            #             # Ensure it's a datetime object
+            #             if isinstance(shipping_date, pd.Timestamp):
+            #                 shipping_date = shipping_date.to_pydatetime()
                     
-                        shipping_bill_date = shipping_date.strftime("%d/%m/%Y")
-                        print("Formatted Shipping Bill Date:", shipping_bill_date)
+            #             shipping_bill_date = shipping_date.strftime("%d/%m/%Y")
+            #             print("Formatted Shipping Bill Date:", shipping_bill_date)
                     
-                        # --- Wait for date field and fill it ---
-                        wait.until(EC.presence_of_element_located((By.ID, "fromDateOfSelectedBil")))
-                        print("shown shipping bill date")
+            #             # --- Wait for date field and fill it ---
+            #             wait.until(EC.presence_of_element_located((By.ID, "fromDateOfSelectedBil")))
+            #             print("shown shipping bill date")
                     
-                        self.driver.execute_script(f"""
-                            var fromDate = document.getElementById('fromDateOfSelectedBil');
-                            fromDate.value = '{shipping_bill_date}';
-                            fromDate.dispatchEvent(new Event('change'));
-                        """)
+            #             self.driver.execute_script(f"""
+            #                 var fromDate = document.getElementById('fromDateOfSelectedBil');
+            #                 fromDate.value = '{shipping_bill_date}';
+            #                 fromDate.dispatchEvent(new Event('change'));
+            #             """)
                     
-                        time.sleep(1)
+            #             time.sleep(1)
 
                         
 
                     
-                        # --- Fill Authorisation Number ---
-                        auth_no = str(row.get("Authorisation Number", "")).strip()
-                        if i==0:
-                            self.driver.find_element(By.ID, "authorisationNo").clear()
-                            self.driver.find_element(By.ID, "authorisationNo").send_keys(auth_no)
-                        else:
-                            self.driver.find_element(By.ID, "boeLicenseNumber").clear()
-                            self.driver.find_element(By.ID, "boeLicenseNumber").send_keys(auth_no)
+            #             # --- Fill Authorisation Number ---
+            #             auth_no = str(row.get("Authorisation Number", "")).strip()
+            #             if i==0:
+            #                 self.driver.find_element(By.ID, "authorisationNo").clear()
+            #                 self.driver.find_element(By.ID, "authorisationNo").send_keys(auth_no)
+            #             else:
+            #                 self.driver.find_element(By.ID, "boeLicenseNumber").clear()
+            #                 self.driver.find_element(By.ID, "boeLicenseNumber").send_keys(auth_no)
                         
 
-                        print("add authorisation number")
+            #             print("add authorisation number")
                     
-                        # --- Click Search ---
-                        search = wait.until(EC.element_to_be_clickable((By.ID, 'repSearchBtn')))
-                        search.click()
-                        print("✅ Clicked search")
+            #             # --- Click Search ---
+            #             search = wait.until(EC.element_to_be_clickable((By.ID, 'repSearchBtn')))
+            #             search.click()
+            #             print("✅ Clicked search")
 
-                        if i==0:
+            #             if i==0:
     
-                            # --- Wait for table to appear ---
-                            wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable")))
-                            print("table shown")
+            #                 # --- Wait for table to appear ---
+            #                 wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable")))
+            #                 print("table shown")
                             
-                            all_rows = []
-                            i=1
-                            while True:
+            #                 all_rows = []
+            #                 a=1
+            #                 while True:
                                 
-                                # Wait for the table body to load
-                                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billRepositoryTable tbody tr")))
+            #                     # Wait for the table body to load
+            #                     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billRepositoryTable tbody tr")))
                             
-                                rows = self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable tbody tr")
-                                print(f"Found {len(rows)} rows on this page - {i}")
+            #                     rows = self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable tbody tr")
+            #                     print(f"Found {len(rows)} rows on this page - {a}")
                                 
                             
-                                for r in rows:
-                                    cols = r.find_elements(By.TAG_NAME, "td")
-                                    if len(cols) > 1:  # skip "No data available" row
-                                        data = [c.text.strip() for c in cols]
-                                        all_rows.append(data)
+            #                     for r in rows:
+            #                         cols = r.find_elements(By.TAG_NAME, "td")
+            #                         if len(cols) > 1:  # skip "No data available" row
+            #                             data = [c.text.strip() for c in cols]
+            #                             all_rows.append(data)
                             
-                                # Try to find "Next" button and check if it is enabled
-                                try:
-                                    self.driver.execute_script("window.scrollBy(0, -300);")
-                                    time.sleep(0.5)
-                                    self.driver.execute_script("window.scrollBy(0, 300);")
-                                    time.sleep(0.5)
-                                    wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="billRepositoryTable_next"]/a')))
-                                    next_btn = self.driver.find_element(By.XPATH, '//*[@id="billRepositoryTable_next"]/a')
-                                    time.sleep(1)
-                                    next_class = next_btn.get_attribute("class")
-                                    if "disabled" in next_class:
-                                        print("✅ No more pages. Extraction complete.")
-                                        break
-                                    else:
-                                        self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
-                                        next_btn.click()
-                                        time.sleep(2)
-                                        i+=1  # Wait for next page data to load
-                                except Exception as e:
-                                    print("⚠️ Pagination ended or not found:", e)
-                                    if len(rows)==10:
-                                        popup_click = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="CancelOk"]')))
-                                        popup_click.click()
-                                        print("popup handled")
-                                        time.sleep(1)
-                                        wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="billRepositoryTable_next"]/a')))
+            #                     # Try to find "Next" button and check if it is enabled
+            #                     try:
+            #                         self.driver.execute_script("window.scrollBy(0, -300);")
+            #                         time.sleep(0.5)
+            #                         self.driver.execute_script("window.scrollBy(0, 300);")
+            #                         time.sleep(0.5)
+            #                         wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="billRepositoryTable_next"]/a')))
+            #                         next_btn = self.driver.find_element(By.XPATH, '//*[@id="billRepositoryTable_next"]/a')
+            #                         time.sleep(1)
+            #                         next_class = next_btn.get_attribute("class")
+            #                         if "disabled" in next_class:
+            #                             print("✅ No more pages. Extraction complete.")
+            #                             break
+            #                         else:
+            #                             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+            #                             next_btn.click()
+            #                             time.sleep(2)
+            #                             a+=1  # Wait for next page data to load
+            #                     except Exception as e:
+            #                         print("⚠️ Pagination ended or not found:", e)
+            #                         if len(rows)==10:
+            #                             popup_click = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="CancelOk"]')))
+            #                             popup_click.click()
+            #                             print("popup handled")
+            #                             time.sleep(1)
+            #                             wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="billRepositoryTable_next"]/a')))
                                         
-                                        next_btn = self.driver.find_element(By.XPATH, '//*[@id="billRepositoryTable_next"]/a')
-                                        next_class = next_btn.get_attribute("class")
-                                        if "disabled" in next_class:
-                                            print("✅ No more pages. Extraction complete.")
-                                            break
-                                        else:
-                                            self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
-                                            next_btn.click()
-                                            time.sleep(2)
-                                            i+=1
-                                        continue
-                                    else:
-                                        print("all data done")
-                                        break
+            #                             next_btn = self.driver.find_element(By.XPATH, '//*[@id="billRepositoryTable_next"]/a')
+            #                             next_class = next_btn.get_attribute("class")
+            #                             if "disabled" in next_class:
+            #                                 print("✅ No more pages. Extraction complete.")
+            #                                 break
+            #                             else:
+            #                                 self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+            #                                 next_btn.click()
+            #                                 time.sleep(2)
+            #                                 a+=1
+            #                             continue
+            #                         else:
+            #                             print("all data done")
+            #                             break
                             
-                            # --- Extract headers ---
-                            headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable thead th")]
+            #                 # --- Extract headers ---
+            #                 headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable thead th")]
                             
-                            # --- Save to Excel ---
-                            # --- Save to Local Downloads Folder ---
-                            downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
-                            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                            filename = f"EPCG_shipping_bill_Data_{timestamp}.xlsx"
-                            file_path = os.path.join(downloads_path, filename)                    
+            #                 # --- Save to Excel ---
+            #                 # --- Save to Local Downloads Folder ---
+            #                 downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+            #                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            #                 filename = f"EPCG_shipping_bill_Data_{timestamp}.xlsx"
+            #                 file_path = os.path.join(downloads_path, filename)                    
         
-                            df = pd.DataFrame(all_rows, columns=headers)
-                            df.to_excel(file_path, index=False)                    
+            #                 df = pd.DataFrame(all_rows, columns=headers)
+            #                 df.to_excel(file_path, index=False)                    
         
-                            print(f"💾 Data saved to: {file_path}")
+            #                 print(f"💾 Data saved to: {file_path}")
 
-                        else:
-                                                        # --- Wait for Bill of Entry table to load ---
-                            wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable")))
+            #             else:
+            #                                             # --- Wait for Bill of Entry table to load ---
+            #                 wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable")))
                             
-                            all_rows = []
+            #                 all_rows = []
+            #                 b=1
+            #                 while True:
+            #                     # Wait for "Processing..." to disappear
+            #                     try:
+            #                         wait.until_not(EC.visibility_of_element_located((By.ID, "billOfEntryTable_processing")))
+            #                     except:
+            #                         pass
                             
-                            while True:
-                                # Wait for "Processing..." to disappear
-                                try:
-                                    wait.until_not(EC.visibility_of_element_located((By.ID, "billOfEntryTable_processing")))
-                                except:
-                                    pass
+            #                     # Wait for table rows
+            #                     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billOfEntryTable tbody tr")))
                             
-                                # Wait for table rows
-                                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billOfEntryTable tbody tr")))
+            #                     rows = self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable tbody tr")
+            #                     print(f"Found {len(rows)} rows on this page {b}")
                             
-                                rows = self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable tbody tr")
-                                print(f"Found {len(rows)} rows on this page")
+            #                     for r in rows:
+            #                         cols = r.find_elements(By.TAG_NAME, "td")
+            #                         if len(cols) > 1:  # skip "No data available"
+            #                             data = [c.text.strip() for c in cols]
+            #                             all_rows.append(data)
                             
-                                for r in rows:
-                                    cols = r.find_elements(By.TAG_NAME, "td")
-                                    if len(cols) > 1:  # skip "No data available"
-                                        data = [c.text.strip() for c in cols]
-                                        all_rows.append(data)
+            #                     # --- Handle Pagination ---
+            #                     try:
+            #                         self.driver.execute_script("window.scrollBy(0, -300);")
+            #                         time.sleep(0.5)
+            #                         self.driver.execute_script("window.scrollBy(0, 300);")
+            #                         time.sleep(0.5)
+            #                         wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
+            #                         next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
+            #                         time.sleep(1)
+            #                         next_class = next_btn.get_attribute("class")
+                                    
+            #                         if "disabled" in next_class:
+            #                             print("✅ No more pages. Extraction complete.")
+            #                             break
+            #                         else:
+            #                             self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+            #                             next_btn.click()
+            #                             b+=1
+            #                             time.sleep(2)  # allow table to refresh
+            #                     except Exception as e:
+            #                         print("⚠️ Pagination ended or not found:", e)
+            #                         if len(rows)==10:
+            #                             popup_click = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="CancelOk"]')))
+            #                             popup_click.click()
+            #                             print("popup handled")
+            #                             wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
+            #                             next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
+            #                             time.sleep(1)
+            #                             next_class = next_btn.get_attribute("class")
+                                        
+            #                             if "disabled" in next_class:
+            #                                 print("✅ No more pages. Extraction complete.")
+            #                                 break
+            #                             else:
+            #                                 self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+            #                                 next_btn.click()
+            #                                 b+=1
+            #                                 time.sleep(2)
+            #                             continue
+            #                         else:
+            #                             print("all data done")
+            #                             break
                             
-                                # --- Handle Pagination ---
-                                try:
-                                    self.driver.execute_script("window.scrollBy(0, -100);")
-                                    self.driver.execute_script("window.scrollBy(0, 100);")
-                                    wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
-                                    next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
-                                    next_class = next_btn.get_attribute("class")
-                                    if "disabled" in next_class:
-                                        print("✅ No more pages. Extraction complete.")
-                                        break
-                                    else:
-                                        self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
-                                        next_btn.click()
-                                        time.sleep(2)  # allow table to refresh
-                                except Exception as e:
-                                    print("⚠️ Pagination ended or not found:", e)
-                                    break
+            #                 # --- Extract Table Headers ---
+            #                 headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable thead th")]
                             
-                            # --- Extract Table Headers ---
-                            headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable thead th")]
+            #                 # --- Save to Local Downloads Folder ---
+            #                 downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+            #                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            #                 filename = f"EPCG_BillOfEntry_Data_{timestamp}.xlsx"
+            #                 file_path = os.path.join(downloads_path, filename)
                             
-                            # --- Save to Local Downloads Folder ---
-                            downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
-                            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                            filename = f"EPCG_BillOfEntry_Data_{timestamp}.xlsx"
-                            file_path = os.path.join(downloads_path, filename)
+            #                 df = pd.DataFrame(all_rows, columns=headers)
+            #                 df.to_excel(file_path, index=False)
                             
-                            df = pd.DataFrame(all_rows, columns=headers)
-                            df.to_excel(file_path, index=False)
-                            
-                            print(f"💾 Data saved to: {file_path}")
+            #                 print(f"💾 Data saved to: {file_path}")
 
-                time.sleep(1)
-                self.driver.refresh()  
-                time.sleep(1)
-                repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='EPCG']"))
-                )
-                repo.click()
-                print("✅ Clicked on EPCG")
+            #     time.sleep(1)
+            #     self.driver.refresh()  
+            #     time.sleep(1)
+            #     repo = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='EPCG']"))
+            #     )
+            #     repo.click()
+            #     print("✅ Clicked on EPCG")
 
-                repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, "//h5[normalize-space()='Closure of EPCG/Issuance of Post Export Scrip']"))
-                )
-                repo.click()
-                print("✅ Clicked on closure of EPCG")
-                time.sleep(1)
+            #     repo = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, "//h5[normalize-space()='Closure of EPCG/Issuance of Post Export Scrip']"))
+            #     )
+            #     repo.click()
+            #     print("✅ Clicked on closure of EPCG")
+            #     time.sleep(1)
 
-                repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[@id='btnNewApp']"))
-                )
-                repo.click()
-                print("Start fresh application")
+            #     repo = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, "//button[@id='btnNewApp']"))
+            #     )
+            #     repo.click()
+            #     print("Start fresh application")
 
-                wait = WebDriverWait(self.driver, 100)
-                dropdown = wait.until(EC.element_to_be_clickable((By.ID, "applicationFor")))
-                dropdown.click()
-                option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='REDEMPTION']")))
-                option.click()
-                time.sleep(1)
+            #     wait = WebDriverWait(self.driver, 100)
+            #     dropdown = wait.until(EC.element_to_be_clickable((By.ID, "applicationFor")))
+            #     dropdown.click()
+            #     option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='REDEMPTION']")))
+            #     option.click()
+            #     time.sleep(1)
 
-                auth_closure = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="custom-accordion"]/div[2]/div[1]/a'))
-                )
-                auth_closure.click()
-                print("Auth closure")
-                
-
-                
-                
-                # EPCG Authorization Number to match
-                target_auth_no = row.get("EPCG Authorisation Number")
+            #     auth_closure = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="custom-accordion"]/div[2]/div[1]/a'))
+            #     )
+            #     auth_closure.click()
+            #     print("Auth closure")
                 
 
-                # Wait for the table to be visible
-                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.dataTables_scrollBody")))
                 
-                found = False
-                page = 1
                 
-                while True:
-                    try:
-                        # Find the cell containing the EPCG Authorization Number
-                        cell_xpath = f"//div[@class='dataTables_scrollBody']//table//td[normalize-space()='{target_auth_no}']"
-                        target_cell = self.driver.find_element(By.XPATH, cell_xpath)
+            #     # EPCG Authorization Number to match
+            #     target_auth_no = row.get("EPCG Authorisation Number")
                 
-                        # Scroll the cell into view
-                        self.driver.execute_script("arguments[0].scrollIntoView(true);", target_cell)
-                        time.sleep(1)
-                
-                        # Get the parent row and click its radio button
-                        parent_row = target_cell.find_element(By.XPATH, "./ancestor::tr")
-                        radio_button = parent_row.find_element(By.CSS_SELECTOR, "input[type='radio']")
-                        self.driver.execute_script("arguments[0].click();", radio_button)
-                
-                        print(f"✅ Selected EPCG Authorization Number: {target_auth_no}")
-                        found = True
-                        break
-                
-                    except Exception:
-                        # Check for next page if not found
-                        try:
-                            self.driver.execute_script("window.scrollBy(0, -100);")
-                            self.driver.execute_script("window.scrollBy(0, 100);")
-                            wait.until(EC.presence_of_element_located((By.ID, "epcgauthTbl_next")))
-                            next_button = self.driver.find_element(By.ID, "epcgauthTbl_next")
-                            if "disabled" in next_button.get_attribute("class"):
-                                break  # No more pages left
-                            self.driver.execute_script("arguments[0].click();", next_button)
-                            page += 1
-                            print(f"🔁 Searching on page {page}...")
-                            time.sleep(2)
-                        except:
-                            break
-                
-                if not found:
-                    print(f"❌ Target EPCG Authorization Number {target_auth_no} not found in any page.")
-                
-                prd_val = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="eoPending"]/div/div/div[2]/div/div/div[1]/label'))
-                )
-                prd_val.click()
-                nxt = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
-                )
-                nxt.click()
-                time.sleep(1)
-                self.driver.execute_script("document.body.style.zoom='80%'")
-                time.sleep(0.5)
-                self.driver.execute_script("document.body.style.zoom='60%'")
-                time.sleep(0.5)
-                
-                # ii = wait.until(
-                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="closureAuthorisationDetails"]/div[2]/div[1]/a'))
-                # )
-                # ii.click()
-                # print("click import ")
-                time.sleep(1)
-                self.driver.execute_script("window.scrollBy(0, 300);")
-                ja = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="closureAuthorisationDetails"]/div[4]/div[1]/a'))
-                )
-                ja.click()
-                print("click juri address ")
-                jac = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, "//textarea[@id='jurisdictionalAddress']"))
-                )
-                jac.clear()  # optional, clears existing text
-                jac.send_keys("-")
-                print("Sent '-' to jurisdictionalAddress field")
 
-                save_next = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
-                )
-                save_next.click()
-                print("click save and next  ")
-                time.sleep(2)
+            #     # Wait for the table to be visible
+            #     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.dataTables_scrollBody")))
+                
+            #     found = False
+            #     page = 1
+                
+            #     while True:
+            #         try:
+            #             # Find the cell containing the EPCG Authorization Number
+            #             cell_xpath = f"//div[@class='dataTables_scrollBody']//table//td[normalize-space()='{target_auth_no}']"
+            #             target_cell = self.driver.find_element(By.XPATH, cell_xpath)
+                
+            #             # Scroll the cell into view
+            #             self.driver.execute_script("arguments[0].scrollIntoView(true);", target_cell)
+            #             time.sleep(1)
+                
+            #             # Get the parent row and click its radio button
+            #             parent_row = target_cell.find_element(By.XPATH, "./ancestor::tr")
+            #             radio_button = parent_row.find_element(By.CSS_SELECTOR, "input[type='radio']")
+            #             self.driver.execute_script("arguments[0].click();", radio_button)
+                
+            #             print(f"✅ Selected EPCG Authorization Number: {target_auth_no}")
+            #             found = True
+            #             break
+                
+            #         except Exception:
+            #             # Check for next page if not found
+            #             try:
+            #                 self.driver.execute_script("window.scrollBy(0, -100);")
+            #                 self.driver.execute_script("window.scrollBy(0, 100);")
+            #                 wait.until(EC.presence_of_element_located((By.ID, "epcgauthTbl_next")))
+            #                 next_button = self.driver.find_element(By.ID, "epcgauthTbl_next")
+            #                 if "disabled" in next_button.get_attribute("class"):
+            #                     break  # No more pages left
+            #                 self.driver.execute_script("arguments[0].click();", next_button)
+            #                 page += 1
+            #                 print(f"🔁 Searching on page {page}...")
+            #                 time.sleep(2)
+            #             except:
+            #                 break
+                
+            #     if not found:
+            #         print(f"❌ Target EPCG Authorization Number {target_auth_no} not found in any page.")
+                
+            #     prd_val = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="eoPending"]/div/div/div[2]/div/div/div[1]/label'))
+            #     )
+            #     prd_val.click()
+            #     nxt = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
+            #     )
+            #     nxt.click()
+            #     time.sleep(1)
+            #     self.driver.execute_script("document.body.style.zoom='80%'")
+            #     time.sleep(0.5)
+            #     self.driver.execute_script("document.body.style.zoom='60%'")
+            #     time.sleep(0.5)
+                
+            #     # ii = wait.until(
+            #     #     EC.element_to_be_clickable((By.XPATH, '//*[@id="closureAuthorisationDetails"]/div[2]/div[1]/a'))
+            #     # )
+            #     # ii.click()
+            #     # print("click import ")
+            #     time.sleep(1)
+            #     self.driver.execute_script("window.scrollBy(0, 300);")
+            #     ja = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="closureAuthorisationDetails"]/div[4]/div[1]/a'))
+            #     )
+            #     ja.click()
+            #     print("click juri address ")
+            #     jac = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, "//textarea[@id='jurisdictionalAddress']"))
+            #     )
+            #     jac.clear()  # optional, clears existing text
+            #     jac.send_keys("-")
+            #     print("Sent '-' to jurisdictionalAddress field")
 
-                # self.driver.execute_script("document.body.style.zoom='80%'")
-                # time.sleep(0.5)
-                # self.driver.execute_script("document.body.style.zoom='60%'")
-                # time.sleep(0.5)
+            #     save_next = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
+            #     )
+            #     save_next.click()
+            #     print("click save and next  ")
+            #     time.sleep(2)
+
+            #     # self.driver.execute_script("document.body.style.zoom='80%'")
+            #     # time.sleep(0.5)
+            #     # self.driver.execute_script("document.body.style.zoom='60%'")
+            #     # time.sleep(0.5)
 
                
 
-                # Scroll to the bottom of the page
-                wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="custom-accordion"]/div/div[1]/div[1]/a')))
-                print("wait")
+            #     # Scroll to the bottom of the page
+            #     wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="custom-accordion"]/div/div[1]/div[1]/a')))
+            #     print("wait")
                 
-                self.driver.execute_script("window.scrollBy(0, 500);")
+            #     self.driver.execute_script("window.scrollBy(0, 500);")
 
                                 
-                try:
-                    print("=== STARTING TABLE EXTRACTION ===")
-                    print("Setting entries per page to 100 for import table...")
-                    try:
-                        # Find the dropdown for entries per page
-                        entries_dropdown = self.driver.find_element(By.NAME, "closureImportItemTbl_length")
-                        select = Select(entries_dropdown)
+            #     try:
+            #         print("=== STARTING TABLE EXTRACTION ===")
+            #         print("Setting entries per page to 100 for import table...")
+            #         try:
+            #             # Find the dropdown for entries per page
+            #             entries_dropdown = self.driver.find_element(By.NAME, "closureImportItemTbl_length")
+            #             select = Select(entries_dropdown)
                         
-                        # Select 100 entries
-                        select.select_by_value("100")
-                        print("✓ Selected 100 entries per page for import table")
+            #             # Select 100 entries
+            #             select.select_by_value("100")
+            #             print("✓ Selected 100 entries per page for import table")
                         
-                        # Wait for table to reload with more entries
-                        time.sleep(3)
-                        print("Waiting for import table to reload with 100 entries...")
+            #             # Wait for table to reload with more entries
+            #             time.sleep(3)
+            #             print("Waiting for import table to reload with 100 entries...")
                         
-                        # Wait for the table to refresh
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureImportItemTbl tbody tr")))
-                        time.sleep(2)
+            #             # Wait for the table to refresh
+            #             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureImportItemTbl tbody tr")))
+            #             time.sleep(2)
                         
-                    except Exception as e:
-                        print(f"Could not set entries to 100 for import table: {e}")
+            #         except Exception as e:
+            #             print(f"Could not set entries to 100 for import table: {e}")
                     
-                    time.sleep(5)
-                    print("Page loaded, waiting for table...")
+            #         time.sleep(5)
+            #         print("Page loaded, waiting for table...")
                     
-                    # Wait for table to be present
-                    table = wait.until(EC.presence_of_element_located((By.ID, "closureImportItemTbl")))
-                    print("✓ Main table found")
+            #         # Wait for table to be present
+            #         table = wait.until(EC.presence_of_element_located((By.ID, "closureImportItemTbl")))
+            #         print("✓ Main table found")
                     
-                    # PRECISE HEADER EXTRACTION - Based on your HTML structure
-                    print("Extracting headers precisely...")
+            #         # PRECISE HEADER EXTRACTION - Based on your HTML structure
+            #         print("Extracting headers precisely...")
                     
-                    # Method 1: Extract from the specific header structure in your HTML
-                    headers = []
+            #         # Method 1: Extract from the specific header structure in your HTML
+            #         headers = []
                     
-                    # Get the main header rows
-                    header_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureImportItemTbl thead tr")
-                    print(f"Found {len(header_rows)} header rows")
+            #         # Get the main header rows
+            #         header_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureImportItemTbl thead tr")
+            #         print(f"Found {len(header_rows)} header rows")
                     
-                    # Extract from first header row (main headers)
-                    first_row_headers = header_rows[0].find_elements(By.TAG_NAME, "th")
-                    print(f"First row has {len(first_row_headers)} headers")
+            #         # Extract from first header row (main headers)
+            #         first_row_headers = header_rows[0].find_elements(By.TAG_NAME, "th")
+            #         print(f"First row has {len(first_row_headers)} headers")
                     
-                    for i, header in enumerate(first_row_headers):
-                        text = header.text.strip()
-                        colspan = header.get_attribute("colspan")
-                        rowspan = header.get_attribute("rowspan")
+            #         for i, header in enumerate(first_row_headers):
+            #             text = header.text.strip()
+            #             colspan = header.get_attribute("colspan")
+            #             rowspan = header.get_attribute("rowspan")
                         
-                        print(f"Header {i+1}: '{text}' (colspan: {colspan}, rowspan: {rowspan})")
+            #             print(f"Header {i+1}: '{text}' (colspan: {colspan}, rowspan: {rowspan})")
                         
-                        if text:
-                            if colspan and int(colspan) > 1:
-                                # This is a group header - we'll handle the subheaders separately
-                                print(f"  -> Group header spanning {colspan} columns: {text}")
-                            elif rowspan and int(rowspan) > 1:
-                                # This header spans multiple rows
-                                headers.append(text)
-                            else:
-                                headers.append(text)
+            #             if text:
+            #                 if colspan and int(colspan) > 1:
+            #                     # This is a group header - we'll handle the subheaders separately
+            #                     print(f"  -> Group header spanning {colspan} columns: {text}")
+            #                 elif rowspan and int(rowspan) > 1:
+            #                     # This header spans multiple rows
+            #                     headers.append(text)
+            #                 else:
+            #                     headers.append(text)
                     
-                    # Extract from second header row (sub-headers)
-                    if len(header_rows) > 1:
-                        second_row_headers = header_rows[1].find_elements(By.TAG_NAME, "th")
-                        print(f"Second row has {len(second_row_headers)} sub-headers")
+            #         # Extract from second header row (sub-headers)
+            #         if len(header_rows) > 1:
+            #             second_row_headers = header_rows[1].find_elements(By.TAG_NAME, "th")
+            #             print(f"Second row has {len(second_row_headers)} sub-headers")
                         
-                        for i, header in enumerate(second_row_headers):
-                            text = header.text.strip()
-                            if text:
-                                headers.append(text)
-                                print(f"Sub-header {i+1}: '{text}'")
+            #             for i, header in enumerate(second_row_headers):
+            #                 text = header.text.strip()
+            #                 if text:
+            #                     headers.append(text)
+            #                     print(f"Sub-header {i+1}: '{text}'")
                     
-                    print(f"Headers after two-row extraction: {headers}")
-                    print(f"Total headers: {len(headers)}")
+            #         print(f"Headers after two-row extraction: {headers}")
+            #         print(f"Total headers: {len(headers)}")
                     
-                    # Method 2: Direct extraction from all visible th elements (alternative approach)
-                    if len(headers) < 10:  # If we don't have enough headers, try alternative
-                        print("\nTrying alternative header extraction...")
-                        headers = []
+            #         # Method 2: Direct extraction from all visible th elements (alternative approach)
+            #         if len(headers) < 10:  # If we don't have enough headers, try alternative
+            #             print("\nTrying alternative header extraction...")
+            #             headers = []
                         
-                        # Get all th elements and filter properly
-                        all_ths = self.driver.find_elements(By.CSS_SELECTOR, "#closureImportItemTbl thead th")
+            #             # Get all th elements and filter properly
+            #             all_ths = self.driver.find_elements(By.CSS_SELECTOR, "#closureImportItemTbl thead th")
                         
-                        for i, th in enumerate(all_ths):
-                            text = th.text.strip()
-                            if text and len(text) > 1:  # Filter out empty and very short texts
-                                # Skip group headers that don't represent actual data columns
-                                if not any(phrase in text for phrase in ["Details of", "Details Of"]):
-                                    headers.append(text)
-                                    print(f"Header {i+1}: '{text}'")
+            #             for i, th in enumerate(all_ths):
+            #                 text = th.text.strip()
+            #                 if text and len(text) > 1:  # Filter out empty and very short texts
+            #                     # Skip group headers that don't represent actual data columns
+            #                     if not any(phrase in text for phrase in ["Details of", "Details Of"]):
+            #                         headers.append(text)
+            #                         print(f"Header {i+1}: '{text}'")
                         
-                        print(f"Alternative headers: {headers}")
+            #             print(f"Alternative headers: {headers}")
                     
-                    # Method 3: Extract based on data column count and known header structure
-                    if not headers or len(headers) < 10:
-                        print("\nUsing known header structure from HTML...")
-                        # Based on your HTML structure, these are the expected headers:
-                        expected_headers = [
-                            "SNo.", "SNo. Of Item", "ITC(HS) Code", "Description of Capital goods to be Imported",
-                            "Quantity Imported", "Unit of measure", "Quantity Invalidated", "Unit of measure (Invalidated)",
-                            "Whether Capital goods is restricted for import", "Installation Certificate No.", 
-                            "Installation Certificate Date", "Bill of Entry No./GST Invoice No./Invoice No.",
-                            "Bill of Entry Date/GST Invoice Date/Invoice Date", "Supply Date", "Invoice Serial No.",
-                            "CIF value of imports/deemed imports (INR)", "Duty saved amount (INR)", "Duty saved value (in USD)",
-                            "Edit/ Delete"
-                        ]
+            #         # Method 3: Extract based on data column count and known header structure
+            #         if not headers or len(headers) < 10:
+            #             print("\nUsing known header structure from HTML...")
+            #             # Based on your HTML structure, these are the expected headers:
+            #             expected_headers = [
+            #                 "SNo.", "SNo. Of Item", "ITC(HS) Code", "Description of Capital goods to be Imported",
+            #                 "Quantity Imported", "Unit of measure", "Quantity Invalidated", "Unit of measure (Invalidated)",
+            #                 "Whether Capital goods is restricted for import", "Installation Certificate No.", 
+            #                 "Installation Certificate Date", "Bill of Entry No./GST Invoice No./Invoice No.",
+            #                 "Bill of Entry Date/GST Invoice Date/Invoice Date", "Supply Date", "Invoice Serial No.",
+            #                 "CIF value of imports/deemed imports (INR)", "Duty saved amount (INR)", "Duty saved value (in USD)",
+            #                 "Edit/ Delete"
+            #             ]
                         
-                        # Check how many columns we actually have in data
-                        try:
-                            sample_row = self.driver.find_element(By.CSS_SELECTOR, "#closureImportItemTbl tbody tr")
-                            actual_columns = len(sample_row.find_elements(By.TAG_NAME, "td"))
-                            print(f"Actual data columns: {actual_columns}")
+            #             # Check how many columns we actually have in data
+            #             try:
+            #                 sample_row = self.driver.find_element(By.CSS_SELECTOR, "#closureImportItemTbl tbody tr")
+            #                 actual_columns = len(sample_row.find_elements(By.TAG_NAME, "td"))
+            #                 print(f"Actual data columns: {actual_columns}")
                             
-                            if actual_columns <= len(expected_headers):
-                                headers = expected_headers[:actual_columns]
-                                print(f"Using {actual_columns} headers from expected list")
-                            else:
-                                headers = expected_headers
-                                print("Using all expected headers")
-                        except:
-                            headers = expected_headers[:19]  # Use first 19 as default
-                            print("Using default expected headers")
+            #                 if actual_columns <= len(expected_headers):
+            #                     headers = expected_headers[:actual_columns]
+            #                     print(f"Using {actual_columns} headers from expected list")
+            #                 else:
+            #                     headers = expected_headers
+            #                     print("Using all expected headers")
+            #             except:
+            #                 headers = expected_headers[:19]  # Use first 19 as default
+            #                 print("Using default expected headers")
                     
-                    print(f"\nFINAL HEADERS ({len(headers)}):")
-                    for i, header in enumerate(headers):
-                        print(f"  {i+1}. {header}")
+            #         print(f"\nFINAL HEADERS ({len(headers)}):")
+            #         for i, header in enumerate(headers):
+            #             print(f"  {i+1}. {header}")
                     
-                    # DATA EXTRACTION
-                    print("\n=== STARTING DATA EXTRACTION ===")
-                    all_data = []
-                    page_count = 1
+            #         # DATA EXTRACTION
+            #         print("\n=== STARTING DATA EXTRACTION ===")
+            #         all_data = []
+            #         page_count = 1
                     
-                    while True:
-                        print(f"--- Processing Page {page_count} ---")
+            #         while True:
+            #             print(f"--- Processing Page {page_count} ---")
                         
-                        # Wait for table
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureImportItemTbl tbody")))
-                        time.sleep(2)
+            #             # Wait for table
+            #             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureImportItemTbl tbody")))
+            #             time.sleep(2)
                         
-                        # Get current page rows
-                        current_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureImportItemTbl tbody tr")
-                        print(f"Found {len(current_rows)} rows on page {page_count}")
+            #             # Get current page rows
+            #             current_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureImportItemTbl tbody tr")
+            #             print(f"Found {len(current_rows)} rows on page {page_count}")
                         
-                        if not current_rows:
-                            print("No rows found, stopping...")
-                            break
+            #             if not current_rows:
+            #                 print("No rows found, stopping...")
+            #                 break
                         
-                        page_data = []
-                        for row in current_rows:
-                            cells = row.find_elements(By.TAG_NAME, "td")
-                            row_data = [cell.text.strip() for cell in cells]
+            #             page_data = []
+            #             for row in current_rows:
+            #                 cells = row.find_elements(By.TAG_NAME, "td")
+            #                 row_data = [cell.text.strip() for cell in cells]
                             
-                            if row_data and any(cell for cell in row_data if cell):  # Only add non-empty rows
-                                page_data.append(row_data)
+            #                 if row_data and any(cell for cell in row_data if cell):  # Only add non-empty rows
+            #                     page_data.append(row_data)
                         
-                        all_data.extend(page_data)
-                        print(f"Added {len(page_data)} rows from page {page_count}")
+            #             all_data.extend(page_data)
+            #             print(f"Added {len(page_data)} rows from page {page_count}")
                         
-                        # Check for next page
-                        try:
-                            self.driver.execute_script("window.scrollBy(0, -100);")
-                            self.driver.execute_script("window.scrollBy(0, 100);")
-                            wait.until(EC.presence_of_element_located((By.ID, "closureImportItemTbl_next")))
-                            next_button = self.driver.find_element(By.ID, "closureImportItemTbl_next")
-                            if "disabled" in next_button.get_attribute("class"):
-                                print("Last page reached")
-                                break
-                            else:
-                                print("Going to next page...")
-                                self.driver.execute_script("arguments[0].click();", next_button)
-                                time.sleep(3)
-                                page_count += 1
+            #             # Check for next page
+            #             try:
+            #                 self.driver.execute_script("window.scrollBy(0, -300);")
+            #                 time.sleep(0.5)
+            #                 self.driver.execute_script("window.scrollBy(0, 300);")
+            #                 time.sleep(0.5)
+            #                 wait.until(EC.presence_of_element_located((By.ID, "closureImportItemTbl_next")))
+            #                 time.sleep(1)
+            #                 next_button = self.driver.find_element(By.ID, "closureImportItemTbl_next")
+            #                 if "disabled" in next_button.get_attribute("class"):
+            #                     print("Last page reached")
+            #                     break
+            #                 else:
+            #                     print("Going to next page...")
+            #                     self.driver.execute_script("arguments[0].click();", next_button)
+            #                     time.sleep(3)
+            #                     page_count += 1
                                 
-                                if page_count > 20:
-                                    print("Safety limit reached")
-                                    break
+            #                     if page_count > 20:
+            #                         print("Safety limit reached")
+            #                         break
                                     
-                        except NoSuchElementException:
-                            print("No next button found")
-                            break
+            #             except NoSuchElementException:
+            #                 print("No next button found")
+            #                 break
                     
-                    print(f"\nExtraction complete: {len(all_data)} total rows from {page_count} pages")
+            #         print(f"\nExtraction complete: {len(all_data)} total rows from {page_count} pages")
                     
-                    # CREATE DATAFRAME AND SAVE
-                    if all_data:
-                        # Ensure headers match data columns
-                        if len(headers) != len(all_data[0]):
-                            print(f"Adjusting headers: {len(headers)} -> {len(all_data[0])}")
-                            if len(headers) > len(all_data[0]):
-                                headers = headers[:len(all_data[0])]
-                            else:
-                                # Use the headers we have and add generic for missing ones
-                                base_headers = headers.copy()
-                                for i in range(len(headers), len(all_data[0])):
-                                    base_headers.append(f"Column_{i+1}")
-                                headers = base_headers
+            #         # CREATE DATAFRAME AND SAVE
+            #         if all_data:
+            #             # Ensure headers match data columns
+            #             if len(headers) != len(all_data[0]):
+            #                 print(f"Adjusting headers: {len(headers)} -> {len(all_data[0])}")
+            #                 if len(headers) > len(all_data[0]):
+            #                     headers = headers[:len(all_data[0])]
+            #                 else:
+            #                     # Use the headers we have and add generic for missing ones
+            #                     base_headers = headers.copy()
+            #                     for i in range(len(headers), len(all_data[0])):
+            #                         base_headers.append(f"Column_{i+1}")
+            #                     headers = base_headers
                         
-                        df = pd.DataFrame(all_data, columns=headers)
+            #             df = pd.DataFrame(all_data, columns=headers)
                         
-                        # Save to Downloads
-                        downloads_path = os.path.expanduser("~/Downloads")
-                        timestamp = time.strftime("%Y%m%d_%H%M%S")
-                        filename = os.path.join(downloads_path, f"EPCG_itemOfImport_{timestamp}.xlsx")
+            #             # Save to Downloads
+            #             downloads_path = os.path.expanduser("~/Downloads")
+            #             timestamp = time.strftime("%Y%m%d_%H%M%S")
+            #             filename = os.path.join(downloads_path, f"EPCG_itemOfImport_{timestamp}.xlsx")
                         
-                        df.to_excel(filename, index=False, engine='openpyxl')
-                        print(f"✓ SUCCESS: File saved to: {filename}")
+            #             df.to_excel(filename, index=False, engine='openpyxl')
+            #             print(f"✓ SUCCESS: File saved to: {filename}")
                         
-                        print("\nFirst 2 rows with actual headers:")
-                        print(df.head(2))
+            #             print("\nFirst 2 rows with actual headers:")
+            #             print(df.head(2))
                         
-                    else:
-                        print("✗ No data extracted")
+            #         else:
+            #             print("✗ No data extracted")
                 
-                except Exception as e:
-                    print(f"✗ ERROR: {e}")
-                    import traceback
-                    traceback.print_exc()
+            #     except Exception as e:
+            #         print(f"✗ ERROR: {e}")
+            #         import traceback
+            #         traceback.print_exc()
        
-                # Items of Export 
-                le = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="custom-accordion"]/div/div[2]/div[1]/a'))
-                )
-                le.click()
-                try:
-                    print("=== STARTING EXPORT TABLE EXTRACTION ===")
-                    print("Setting entries per page to 100...")
-                    try:
-                        # Find the dropdown for entries per page
-                        entries_dropdown = self.driver.find_element(By.NAME, "closureExportItemTbl_length")
-                        select = Select(entries_dropdown)
+            #     # Items of Export 
+            #     le = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="custom-accordion"]/div/div[2]/div[1]/a'))
+            #     )
+            #     le.click()
+            #     try:
+            #         print("=== STARTING EXPORT TABLE EXTRACTION ===")
+            #         print("Setting entries per page to 100...")
+            #         try:
+            #             # Find the dropdown for entries per page
+            #             entries_dropdown = self.driver.find_element(By.NAME, "closureExportItemTbl_length")
+            #             select = Select(entries_dropdown)
                         
-                        # Select 100 entries
-                        select.select_by_value("100")
-                        print("✓ Selected 100 entries per page")
+            #             # Select 100 entries
+            #             select.select_by_value("100")
+            #             print("✓ Selected 100 entries per page")
                         
-                        # Wait for table to reload with more entries
-                        time.sleep(3)
-                        print("Waiting for table to reload with 100 entries...")
+            #             # Wait for table to reload with more entries
+            #             time.sleep(3)
+            #             print("Waiting for table to reload with 100 entries...")
                         
-                        # Wait for the table to refresh
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureExportItemTbl tbody tr")))
-                        time.sleep(2)
+            #             # Wait for the table to refresh
+            #             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureExportItemTbl tbody tr")))
+            #             time.sleep(2)
                         
-                    except Exception as e:
-                        print(f"Could not set entries to 100: {e}")
+            #         except Exception as e:
+            #             print(f"Could not set entries to 100: {e}")
                 
-                    # Wait for export table to be present
-                    table = wait.until(EC.presence_of_element_located((By.ID, "closureExportItemTbl")))
-                    print("✓ Export table found")
+            #         # Wait for export table to be present
+            #         table = wait.until(EC.presence_of_element_located((By.ID, "closureExportItemTbl")))
+            #         print("✓ Export table found")
                     
-                    # EXTRACT ACTUAL HEADERS FOR EXPORT TABLE
-                    print("Extracting actual headers for export table...")
+            #         # EXTRACT ACTUAL HEADERS FOR EXPORT TABLE
+            #         print("Extracting actual headers for export table...")
                     
-                    headers = []
+            #         headers = []
                     
-                    # Get all header rows from export table
-                    header_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureExportItemTbl thead tr")
-                    print(f"Found {len(header_rows)} header rows")
+            #         # Get all header rows from export table
+            #         header_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureExportItemTbl thead tr")
+            #         print(f"Found {len(header_rows)} header rows")
                     
-                    # Process first row headers (main headers)
-                    if len(header_rows) >= 1:
-                        first_row_headers = header_rows[0].find_elements(By.TAG_NAME, "th")
-                        print(f"First row has {len(first_row_headers)} headers")
+            #         # Process first row headers (main headers)
+            #         if len(header_rows) >= 1:
+            #             first_row_headers = header_rows[0].find_elements(By.TAG_NAME, "th")
+            #             print(f"First row has {len(first_row_headers)} headers")
                         
-                        for i, header in enumerate(first_row_headers):
-                            text = header.text.strip()
-                            colspan = header.get_attribute("colspan")
-                            rowspan = header.get_attribute("rowspan")
+            #             for i, header in enumerate(first_row_headers):
+            #                 text = header.text.strip()
+            #                 colspan = header.get_attribute("colspan")
+            #                 rowspan = header.get_attribute("rowspan")
                             
-                            print(f"Header {i+1}: '{text}' (colspan: {colspan}, rowspan: {rowspan})")
+            #                 print(f"Header {i+1}: '{text}' (colspan: {colspan}, rowspan: {rowspan})")
                             
-                            if text:
-                                # Skip group headers that span multiple columns
-                                if colspan and int(colspan) > 1:
-                                    print(f"  -> Group header: {text} (spans {colspan} columns)")
-                                    # Don't add group headers as individual columns
-                                elif rowspan and int(rowspan) > 1:
-                                    # This is a regular header spanning multiple rows
-                                    headers.append(text)
-                                else:
-                                    headers.append(text)
+            #                 if text:
+            #                     # Skip group headers that span multiple columns
+            #                     if colspan and int(colspan) > 1:
+            #                         print(f"  -> Group header: {text} (spans {colspan} columns)")
+            #                         # Don't add group headers as individual columns
+            #                     elif rowspan and int(rowspan) > 1:
+            #                         # This is a regular header spanning multiple rows
+            #                         headers.append(text)
+            #                     else:
+            #                         headers.append(text)
                     
-                    # Process second row headers (sub-headers)
-                    if len(header_rows) >= 2:
-                        second_row_headers = header_rows[1].find_elements(By.TAG_NAME, "th")
-                        print(f"Second row has {len(second_row_headers)} sub-headers")
+            #         # Process second row headers (sub-headers)
+            #         if len(header_rows) >= 2:
+            #             second_row_headers = header_rows[1].find_elements(By.TAG_NAME, "th")
+            #             print(f"Second row has {len(second_row_headers)} sub-headers")
                         
-                        for i, header in enumerate(second_row_headers):
-                            text = header.text.strip()
-                            if text:
-                                headers.append(text)
-                                print(f"Sub-header {i+1}: '{text}'")
+            #             for i, header in enumerate(second_row_headers):
+            #                 text = header.text.strip()
+            #                 if text:
+            #                     headers.append(text)
+            #                     print(f"Sub-header {i+1}: '{text}'")
                     
-                    print(f"Headers after extraction: {headers}")
-                    print(f"Total headers: {len(headers)}")
+            #         print(f"Headers after extraction: {headers}")
+            #         print(f"Total headers: {len(headers)}")
                     
-                    # If we don't have enough headers, use known structure from HTML
-                    if len(headers) < 15:
-                        print("\nUsing known header structure from HTML...")
-                        expected_headers = [
-                            "SNo.", "Select", "SNo. Of Item", "ITC(HS) Code/Service Code", 
-                            "Description of the Item", "ITC (HS) Code of the alternate Product", 
-                            "Description of the Alternate Product Item", "Type of Export", "EO Block Period",
-                            "Shipping Bill No. / Bill of Export", "Port code of registration", 
-                            "Shipping Bill Date", "Invoice No.", "Invoice Date", "Invoice Serial No.",
-                            "FOB Value/FOR Value (in FC)", "FOB Value/ FOR value (in USD normalized)", 
-                            "FOB Value/FOR Value (in INR)", "Foreign Currency", "Exchange rate of FC to INR",
-                            "ECGC Claimed?", "Edit/ Delete"
-                        ]
+            #         # If we don't have enough headers, use known structure from HTML
+            #         if len(headers) < 15:
+            #             print("\nUsing known header structure from HTML...")
+            #             expected_headers = [
+            #                 "SNo.", "Select", "SNo. Of Item", "ITC(HS) Code/Service Code", 
+            #                 "Description of the Item", "ITC (HS) Code of the alternate Product", 
+            #                 "Description of the Alternate Product Item", "Type of Export", "EO Block Period",
+            #                 "Shipping Bill No. / Bill of Export", "Port code of registration", 
+            #                 "Shipping Bill Date", "Invoice No.", "Invoice Date", "Invoice Serial No.",
+            #                 "FOB Value/FOR Value (in FC)", "FOB Value/ FOR value (in USD normalized)", 
+            #                 "FOB Value/FOR Value (in INR)", "Foreign Currency", "Exchange rate of FC to INR",
+            #                 "ECGC Claimed?", "Edit/ Delete"
+            #             ]
                         
-                        # Check actual data columns
-                        try:
-                            sample_row = self.driver.find_element(By.CSS_SELECTOR, "#closureExportItemTbl tbody tr")
-                            actual_columns = len(sample_row.find_elements(By.TAG_NAME, "td"))
-                            print(f"Actual data columns: {actual_columns}")
+            #             # Check actual data columns
+            #             try:
+            #                 sample_row = self.driver.find_element(By.CSS_SELECTOR, "#closureExportItemTbl tbody tr")
+            #                 actual_columns = len(sample_row.find_elements(By.TAG_NAME, "td"))
+            #                 print(f"Actual data columns: {actual_columns}")
                             
-                            if actual_columns <= len(expected_headers):
-                                headers = expected_headers[:actual_columns]
-                            else:
-                                headers = expected_headers
-                        except:
-                            headers = expected_headers
+            #                 if actual_columns <= len(expected_headers):
+            #                     headers = expected_headers[:actual_columns]
+            #                 else:
+            #                     headers = expected_headers
+            #             except:
+            #                 headers = expected_headers
                     
-                    print(f"\nFINAL HEADERS ({len(headers)}):")
-                    for i, header in enumerate(headers):
-                        print(f"  {i+1}. {header}")
+            #         print(f"\nFINAL HEADERS ({len(headers)}):")
+            #         for i, header in enumerate(headers):
+            #             print(f"  {i+1}. {header}")
                     
-                    # DATA EXTRACTION
-                    print("\n=== STARTING DATA EXTRACTION ===")
-                    all_data = []
-                    page_count = 1
+            #         # DATA EXTRACTION
+            #         print("\n=== STARTING DATA EXTRACTION ===")
+            #         all_data = []
+            #         page_count = 1
                     
-                    while True:
-                        print(f"--- Processing Page {page_count} ---")
+            #         while True:
+            #             print(f"--- Processing Page {page_count} ---")
                         
-                        # Wait for table
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureExportItemTbl tbody")))
-                        time.sleep(2)
+            #             # Wait for table
+            #             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#closureExportItemTbl tbody")))
+            #             time.sleep(2)
                         
-                        # Get current page rows
-                        current_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureExportItemTbl tbody tr")
-                        print(f"Found {len(current_rows)} rows on page {page_count}")
+            #             # Get current page rows
+            #             current_rows = self.driver.find_elements(By.CSS_SELECTOR, "#closureExportItemTbl tbody tr")
+            #             print(f"Found {len(current_rows)} rows on page {page_count}")
                         
-                        if not current_rows:
-                            print("No rows found, stopping...")
-                            break
+            #             if not current_rows:
+            #                 print("No rows found, stopping...")
+            #                 break
                         
-                        page_data = []
-                        for row_idx, row in enumerate(current_rows):
-                            cells = row.find_elements(By.TAG_NAME, "td")
-                            row_data = []
+            #             page_data = []
+            #             for row_idx, row in enumerate(current_rows):
+            #                 cells = row.find_elements(By.TAG_NAME, "td")
+            #                 row_data = []
                             
-                            for cell in cells:
-                                # Check if cell has links (like Shipping Bill numbers)
-                                links = cell.find_elements(By.TAG_NAME, "a")
-                                if links:
-                                    cell_text = links[0].text.strip()
-                                else:
-                                    cell_text = cell.text.strip()
-                                row_data.append(cell_text)
+            #                 for cell in cells:
+            #                     # Check if cell has links (like Shipping Bill numbers)
+            #                     links = cell.find_elements(By.TAG_NAME, "a")
+            #                     if links:
+            #                         cell_text = links[0].text.strip()
+            #                     else:
+            #                         cell_text = cell.text.strip()
+            #                     row_data.append(cell_text)
                             
-                            if row_data and any(cell for cell in row_data if cell):  # Only add non-empty rows
-                                page_data.append(row_data)
+            #                 if row_data and any(cell for cell in row_data if cell):  # Only add non-empty rows
+            #                     page_data.append(row_data)
                                 
-                                # Show first row sample
-                                if row_idx == 0 and page_count == 1:
-                                    print(f"First row sample: {row_data[:5]}...")  # Show first 5 cells
+            #                     # Show first row sample
+            #                     if row_idx == 0 and page_count == 1:
+            #                         print(f"First row sample: {row_data[:5]}...")  # Show first 5 cells
                         
-                        all_data.extend(page_data)
-                        print(f"Added {len(page_data)} rows from page {page_count}")
+            #             all_data.extend(page_data)
+            #             print(f"Added {len(page_data)} rows from page {page_count}")
                         
-                        # Check for next page
-                        try:
-                            self.driver.execute_script("window.scrollBy(0, -100);")
-                            self.driver.execute_script("window.scrollBy(0, 100);")
-                            wait.until(EC.presence_of_element_located((By.ID, "closureExportItemTbl_next")))
-                            next_button = self.driver.find_element(By.ID, "closureExportItemTbl_next")
-                            if "disabled" in next_button.get_attribute("class"):
-                                print("Last page reached")
-                                break
-                            else:
-                                print("Going to next page...")
-                                # Scroll to button and click
-                                self.driver.execute_script("arguments[0].scrollIntoView();", next_button)
-                                time.sleep(1)
-                                self.driver.execute_script("arguments[0].click();", next_button)
+            #             # Check for next page
+            #             try:
+            #                 self.driver.execute_script("window.scrollBy(0, -100);")
+            #                 self.driver.execute_script("window.scrollBy(0, 100);")
+            #                 wait.until(EC.presence_of_element_located((By.ID, "closureExportItemTbl_next")))
+            #                 next_button = self.driver.find_element(By.ID, "closureExportItemTbl_next")
+            #                 if "disabled" in next_button.get_attribute("class"):
+            #                     print("Last page reached")
+            #                     break
+            #                 else:
+            #                     print("Going to next page...")
+            #                     # Scroll to button and click
+            #                     self.driver.execute_script("arguments[0].scrollIntoView();", next_button)
+            #                     time.sleep(1)
+            #                     self.driver.execute_script("arguments[0].click();", next_button)
                                 
-                                # Wait for page to load
-                                time.sleep(3)
-                                page_count += 1
+            #                     # Wait for page to load
+            #                     time.sleep(3)
+            #                     page_count += 1
                                 
-                                # Safety limit
-                                if page_count > 50:
-                                    print("Safety limit reached - stopping after 50 pages")
-                                    break
+            #                     # # Safety limit
+            #                     # if page_count > 50:
+            #                     #     print("Safety limit reached - stopping after 50 pages")
+            #                     #     break
                                     
-                        except NoSuchElementException:
-                            print("No next button found")
-                            break
-                        except Exception as e:
-                            print(f"Error clicking next button: {e}")
-                            break
+            #             except NoSuchElementException:
+            #                 print("No next button found")
+            #                 break
+            #             except Exception as e:
+            #                 print(f"Error clicking next button: {e}")
+            #                 break
                     
-                    print(f"\nExtraction complete: {len(all_data)} total rows from {page_count} pages")
+            #         print(f"\nExtraction complete: {len(all_data)} total rows from {page_count} pages")
                     
-                    # CREATE DATAFRAME AND SAVE
-                    if all_data:
-                        # Ensure headers match data columns
-                        if len(headers) != len(all_data[0]):
-                            print(f"Adjusting headers: {len(headers)} -> {len(all_data[0])}")
-                            if len(headers) > len(all_data[0]):
-                                headers = headers[:len(all_data[0])]
-                            else:
-                                # Use the headers we have and add generic for missing ones
-                                base_headers = headers.copy()
-                                for i in range(len(headers), len(all_data[0])):
-                                    base_headers.append(f"Column_{i+1}")
-                                headers = base_headers
+            #         # CREATE DATAFRAME AND SAVE
+            #         if all_data:
+            #             # Ensure headers match data columns
+            #             if len(headers) != len(all_data[0]):
+            #                 print(f"Adjusting headers: {len(headers)} -> {len(all_data[0])}")
+            #                 if len(headers) > len(all_data[0]):
+            #                     headers = headers[:len(all_data[0])]
+            #                 else:
+            #                     # Use the headers we have and add generic for missing ones
+            #                     base_headers = headers.copy()
+            #                     for i in range(len(headers), len(all_data[0])):
+            #                         base_headers.append(f"Column_{i+1}")
+            #                     headers = base_headers
                         
-                        df = pd.DataFrame(all_data, columns=headers)
+            #             df = pd.DataFrame(all_data, columns=headers)
                         
-                        # Save to Downloads
-                        downloads_path = os.path.expanduser("~/Downloads")
-                        timestamp = time.strftime("%Y%m%d_%H%M%S")
-                        filename = os.path.join(downloads_path, f"EPCG_ItemsOfExport_{timestamp}.xlsx")
+            #             # Save to Downloads
+            #             downloads_path = os.path.expanduser("~/Downloads")
+            #             timestamp = time.strftime("%Y%m%d_%H%M%S")
+            #             filename = os.path.join(downloads_path, f"EPCG_ItemsOfExport_{timestamp}.xlsx")
                         
-                        df.to_excel(filename, index=False, engine='openpyxl')
-                        print(f"✓ SUCCESS: Export table data saved to: {filename}")
+            #             df.to_excel(filename, index=False, engine='openpyxl')
+            #             print(f"✓ SUCCESS: Export table data saved to: {filename}")
                         
-                        print("\nFirst 3 rows with actual headers:")
-                        print(df.head(3))
+            #             print("\nFirst 3 rows with actual headers:")
+            #             print(df.head(3))
                         
-                        # Show column information
-                        print(f"\nDataFrame shape: {df.shape}")
-                        print("Column names:")
-                        for col in df.columns:
-                            print(f"  - {col}")
+            #             # Show column information
+            #             print(f"\nDataFrame shape: {df.shape}")
+            #             print("Column names:")
+            #             for col in df.columns:
+            #                 print(f"  - {col}")
                         
-                    else:
-                        print("✗ No data extracted from export table")
+            #         else:
+            #             print("✗ No data extracted from export table")
                 
-                except Exception as e:
-                    print(f"✗ ERROR: {e}")
-                    import traceback
-                    traceback.print_exc()
+            #     except Exception as e:
+            #         print(f"✗ ERROR: {e}")
+            #         import traceback
+            #         traceback.print_exc()
 
                 
-                save_next3 = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
-                )
-                save_next3.click()
-                time.sleep(1)
-                alt_ok = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="index"]/div[8]/div/div/div/div[2]/button[2]'))
-                )
-                alt_ok.click()
-                time.sleep(1)
-                # self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
-                # print("scroll")
-                # save_next2 = wait.until(
-                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
-                # )
-                # save_next2.click()
-                # print("click save and next 2 ")
-                # ys = wait.until(
-                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="index"]/div[8]/div/div/div/div[2]/button[2]'))
-                # )
-                # ys.click()
+            #     save_next3 = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="btnNext"]'))
+            #     )
+            #     save_next3.click()
+            #     time.sleep(1)
+            #     alt_ok = wait.until(
+            #         EC.element_to_be_clickable((By.XPATH, '//*[@id="index"]/div[8]/div/div/div/div[2]/button[2]'))
+            #     )
+            #     alt_ok.click()
+            #     time.sleep(1)
+                
+            #     wait = WebDriverWait(self.driver, 100)
 
-                # === Wait for table to load ===
+            #     try:
+            #         print("=== STARTING BANK REALIZATION TABLE EXTRACTION ===")
+                    
+            #         # Wait for bank realization table to be present
+            #         table = wait.until(EC.presence_of_element_located((By.ID, "sbBankRealiseTbl")))
+            #         print("✓ Bank realization table found")
+                    
+            #         # SELECT 100 ENTRIES PER PAGE FOR BANK REALIZATION TABLE
+            #         print("Setting entries per page to 100 for bank realization table...")
+            #         try:
+            #             # Find the dropdown for entries per page
+            #             entries_dropdown = self.driver.find_element(By.NAME, "sbBankRealiseTbl_length")
+            #             select = Select(entries_dropdown)
+                        
+            #             # Select 100 entries
+            #             select.select_by_value("100")
+            #             print("✓ Selected 100 entries per page for bank realization table")
+                        
+            #             # Wait for table to reload with more entries
+            #             time.sleep(3)
+            #             print("Waiting for bank realization table to reload with 100 entries...")
+                        
+            #             # Wait for the table to refresh (wait for loading to complete)
+            #             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#sbBankRealiseTbl tbody tr")))
+            #             time.sleep(2)
+                        
+            #         except Exception as e:
+            #             print(f"Could not set entries to 100 for bank realization table: {e}")
+                    
+            #         # EXTRACT ACTUAL HEADERS FOR BANK REALIZATION TABLE
+            #         print("Extracting actual headers for bank realization table...")
+                    
+            #         headers = []
+                    
+            #         # Get all header rows from bank realization table
+            #         header_rows = self.driver.find_elements(By.CSS_SELECTOR, "#sbBankRealiseTbl thead tr")
+            #         print(f"Found {len(header_rows)} header rows")
+                    
+            #         # Process first row headers (main headers)
+            #         if len(header_rows) >= 1:
+            #             first_row_headers = header_rows[0].find_elements(By.TAG_NAME, "th")
+            #             print(f"First row has {len(first_row_headers)} headers")
+                        
+            #             for i, header in enumerate(first_row_headers):
+            #                 text = header.text.strip()
+            #                 colspan = header.get_attribute("colspan")
+            #                 rowspan = header.get_attribute("rowspan")
+            #                 style = header.get_attribute("style")
+                            
+            #                 print(f"Header {i+1}: '{text}' (colspan: {colspan}, rowspan: {rowspan}, style: {style})")
+                            
+            #                 if text and "display: none" not in str(style):
+            #                     # Skip group headers that span multiple columns
+            #                     if colspan and int(colspan) > 1:
+            #                         print(f"  -> Group header: {text} (spans {colspan} columns)")
+            #                         # Don't add group headers as individual columns
+            #                     elif rowspan and int(rowspan) > 1:
+            #                         # This is a regular header spanning multiple rows
+            #                         headers.append(text)
+            #                     else:
+            #                         headers.append(text)
+                    
+            #         # Process second row headers (sub-headers)
+            #         if len(header_rows) >= 2:
+            #             second_row_headers = header_rows[1].find_elements(By.TAG_NAME, "th")
+            #             print(f"Second row has {len(second_row_headers)} sub-headers")
+                        
+            #             for i, header in enumerate(second_row_headers):
+            #                 text = header.text.strip()
+            #                 style = header.get_attribute("style")
+                            
+            #                 if text and "display: none" not in str(style):
+            #                     headers.append(text)
+            #                     print(f"Sub-header {i+1}: '{text}'")
+                    
+            #         print(f"Headers after extraction: {headers}")
+            #         print(f"Total headers: {len(headers)}")
+                    
+            #         # If we don't have enough headers, use known structure from HTML
+            #         if len(headers) < 10:
+            #             print("\nUsing known header structure from HTML...")
+            #             expected_headers = [
+            #                 "SI.NO.", "Select", "Shipping Bill/Invoice No.", "Port of registration", 
+            #                 "Shipping Bill/Invoice Date", "EDI/Non-EDI SB", "ECGC Reimbursed?",
+            #                 "eBRC/FIRC Number", "Date of Realisation", "Realised Value (in FC)", 
+            #                 "Foreign Currency", "Exchange rate of FC to INR", "Realised Value (in INR)", 
+            #                 "Realised Value (in USD)", "Bank Name", "IFSC Code", "BRC Type", "Edit/ Delete"
+            #             ]
+                        
+            #             # Filter out hidden columns based on actual visibility
+            #             visible_expected_headers = []
+            #             for header in expected_headers:
+            #                 if header not in ["EDI/Non-EDI SB", "ECGC Reimbursed?", "Bank Name", "IFSC Code", "BRC Type"]:
+            #                     visible_expected_headers.append(header)
+                        
+            #             # Check actual data columns
+            #             try:
+            #                 sample_row = self.driver.find_element(By.CSS_SELECTOR, "#sbBankRealiseTbl tbody tr")
+            #                 # Only get visible cells (not hidden by display: none)
+            #                 visible_cells = sample_row.find_elements(By.CSS_SELECTOR, "td:not([style*='display: none'])")
+            #                 actual_columns = len(visible_cells)
+            #                 print(f"Actual visible data columns: {actual_columns}")
+                            
+            #                 if actual_columns <= len(visible_expected_headers):
+            #                     headers = visible_expected_headers[:actual_columns]
+            #                 else:
+            #                     headers = visible_expected_headers
+            #             except:
+            #                 headers = visible_expected_headers
+                    
+            #         print(f"\nFINAL HEADERS ({len(headers)}):")
+            #         for i, header in enumerate(headers):
+            #             print(f"  {i+1}. {header}")
+                    
+            #         # DATA EXTRACTION
+            #         print("\n=== STARTING DATA EXTRACTION ===")
+            #         all_data = []
+            #         page_count = 1
+                    
+            #         while True:
+            #             print(f"--- Processing Page {page_count} ---")
+                        
+            #             # Wait for table
+            #             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#sbBankRealiseTbl tbody")))
+            #             time.sleep(2)
+                        
+            #             # Get current page rows - only visible rows
+            #             current_rows = self.driver.find_elements(By.CSS_SELECTOR, "#sbBankRealiseTbl tbody tr")
+            #             print(f"Found {len(current_rows)} rows on page {page_count}")
+                        
+            #             if not current_rows:
+            #                 print("No rows found, stopping...")
+            #                 break
+                        
+            #             page_data = []
+            #             for row_idx, row in enumerate(current_rows):
+            #                 # Only get visible cells (not hidden by display: none)
+            #                 cells = row.find_elements(By.CSS_SELECTOR, "td:not([style*='display: none'])")
+            #                 row_data = []
+                            
+            #                 for cell in cells:
+            #                     # Check if cell has links
+            #                     links = cell.find_elements(By.TAG_NAME, "a")
+            #                     if links:
+            #                         cell_text = links[0].text.strip()
+            #                     else:
+            #                         cell_text = cell.text.strip()
+            #                     row_data.append(cell_text)
+                            
+            #                 if row_data and any(cell for cell in row_data if cell):  # Only add non-empty rows
+            #                     page_data.append(row_data)
+                                
+            #                     # Show first row sample
+            #                     if row_idx == 0 and page_count == 1:
+            #                         print(f"First row sample: {row_data[:5]}...")  # Show first 5 cells
+                        
+            #             all_data.extend(page_data)
+            #             print(f"Added {len(page_data)} rows from page {page_count}")
+                        
+            #             # Check for next page
+            #             try:
+            #                 self.driver.execute_script("window.scrollBy(0, -100);")
+            #                 self.driver.execute_script("window.scrollBy(0, 100);")
+            #                 wait.until(EC.presence_of_element_located((By.ID, "sbBankRealiseTbl_next")))
+            #                 next_button = self.driver.find_element(By.ID, "sbBankRealiseTbl_next")
+            #                 if "disabled" in next_button.get_attribute("class"):
+            #                     print("Last page reached")
+            #                     break
+            #                 else:
+            #                     print("Going to next page...")
+            #                     # Scroll to button and click
+            #                     self.driver.execute_script("arguments[0].scrollIntoView();", next_button)
+            #                     time.sleep(1)
+            #                     self.driver.execute_script("arguments[0].click();", next_button)
+                                
+            #                     # Wait for page to load
+            #                     time.sleep(3)
+            #                     page_count += 1
+                                
+            #                     # Safety limit
+            #                     if page_count > 50:
+            #                         print("Safety limit reached - stopping after 50 pages")
+            #                         break
+                                    
+            #             except NoSuchElementException:
+            #                 print("No next button found")
+            #                 break
+            #             except Exception as e:
+            #                 print(f"Error clicking next button: {e}")
+            #                 break
+                    
+            #         print(f"\nExtraction complete: {len(all_data)} total rows from {page_count} pages")
+                    
+            #         # CREATE DATAFRAME AND SAVE
+            #         if all_data:
+            #             # Ensure headers match data columns
+            #             if len(headers) != len(all_data[0]):
+            #                 print(f"Adjusting headers: {len(headers)} -> {len(all_data[0])}")
+            #                 if len(headers) > len(all_data[0]):
+            #                     headers = headers[:len(all_data[0])]
+            #                 else:
+            #                     # Use the headers we have and add generic for missing ones
+            #                     base_headers = headers.copy()
+            #                     for i in range(len(headers), len(all_data[0])):
+            #                         base_headers.append(f"Column_{i+1}")
+            #                     headers = base_headers
+                        
+            #             df = pd.DataFrame(all_data, columns=headers)
+                        
+            #             # Save to Downloads
+            #             downloads_path = os.path.expanduser("~/Downloads")
+            #             timestamp = time.strftime("%Y%m%d_%H%M%S")
+            #             filename = os.path.join(downloads_path, f"EPCG_RealisationDetails_{timestamp}.xlsx")
+                        
+            #             df.to_excel(filename, index=False, engine='openpyxl')
+            #             print(f"✓ SUCCESS: Bank realization table data saved to: {filename}")
+                        
+            #             print("\nFirst 3 rows with actual headers:")
+            #             print(df.head(3))
+                        
+            #             # Show column information
+            #             print(f"\nDataFrame shape: {df.shape}")
+            #             print("Column names:")
+            #             for col in df.columns:
+            #                 print(f"  - {col}")
+                        
+            #         else:
+            #             print("✗ No data extracted from bank realization table")
+                
+            #     except Exception as e:
+            #         print(f"✗ ERROR: {e}")
+            #         import traceback
+            #         traceback.print_exc()
+
+
+                # time.sleep(1)
+                # self.driver.refresh()
+                # time.sleep(2)
                 # self.driver.execute_script("document.body.style.zoom='80%'")
                 # time.sleep(0.5)
                 # self.driver.execute_script("document.body.style.zoom='60%'")
                 # time.sleep(0.5)
-                wait = WebDriverWait(self.driver, 100)
 
-                try:
-                    print("=== STARTING BANK REALIZATION TABLE EXTRACTION ===")
-                    
-                    # Wait for bank realization table to be present
-                    table = wait.until(EC.presence_of_element_located((By.ID, "sbBankRealiseTbl")))
-                    print("✓ Bank realization table found")
-                    
-                    # SELECT 100 ENTRIES PER PAGE FOR BANK REALIZATION TABLE
-                    print("Setting entries per page to 100 for bank realization table...")
-                    try:
-                        # Find the dropdown for entries per page
-                        entries_dropdown = self.driver.find_element(By.NAME, "sbBankRealiseTbl_length")
-                        select = Select(entries_dropdown)
-                        
-                        # Select 100 entries
-                        select.select_by_value("100")
-                        print("✓ Selected 100 entries per page for bank realization table")
-                        
-                        # Wait for table to reload with more entries
-                        time.sleep(3)
-                        print("Waiting for bank realization table to reload with 100 entries...")
-                        
-                        # Wait for the table to refresh (wait for loading to complete)
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#sbBankRealiseTbl tbody tr")))
-                        time.sleep(2)
-                        
-                    except Exception as e:
-                        print(f"Could not set entries to 100 for bank realization table: {e}")
-                    
-                    # EXTRACT ACTUAL HEADERS FOR BANK REALIZATION TABLE
-                    print("Extracting actual headers for bank realization table...")
-                    
-                    headers = []
-                    
-                    # Get all header rows from bank realization table
-                    header_rows = self.driver.find_elements(By.CSS_SELECTOR, "#sbBankRealiseTbl thead tr")
-                    print(f"Found {len(header_rows)} header rows")
-                    
-                    # Process first row headers (main headers)
-                    if len(header_rows) >= 1:
-                        first_row_headers = header_rows[0].find_elements(By.TAG_NAME, "th")
-                        print(f"First row has {len(first_row_headers)} headers")
-                        
-                        for i, header in enumerate(first_row_headers):
-                            text = header.text.strip()
-                            colspan = header.get_attribute("colspan")
-                            rowspan = header.get_attribute("rowspan")
-                            style = header.get_attribute("style")
-                            
-                            print(f"Header {i+1}: '{text}' (colspan: {colspan}, rowspan: {rowspan}, style: {style})")
-                            
-                            if text and "display: none" not in str(style):
-                                # Skip group headers that span multiple columns
-                                if colspan and int(colspan) > 1:
-                                    print(f"  -> Group header: {text} (spans {colspan} columns)")
-                                    # Don't add group headers as individual columns
-                                elif rowspan and int(rowspan) > 1:
-                                    # This is a regular header spanning multiple rows
-                                    headers.append(text)
-                                else:
-                                    headers.append(text)
-                    
-                    # Process second row headers (sub-headers)
-                    if len(header_rows) >= 2:
-                        second_row_headers = header_rows[1].find_elements(By.TAG_NAME, "th")
-                        print(f"Second row has {len(second_row_headers)} sub-headers")
-                        
-                        for i, header in enumerate(second_row_headers):
-                            text = header.text.strip()
-                            style = header.get_attribute("style")
-                            
-                            if text and "display: none" not in str(style):
-                                headers.append(text)
-                                print(f"Sub-header {i+1}: '{text}'")
-                    
-                    print(f"Headers after extraction: {headers}")
-                    print(f"Total headers: {len(headers)}")
-                    
-                    # If we don't have enough headers, use known structure from HTML
-                    if len(headers) < 10:
-                        print("\nUsing known header structure from HTML...")
-                        expected_headers = [
-                            "SI.NO.", "Select", "Shipping Bill/Invoice No.", "Port of registration", 
-                            "Shipping Bill/Invoice Date", "EDI/Non-EDI SB", "ECGC Reimbursed?",
-                            "eBRC/FIRC Number", "Date of Realisation", "Realised Value (in FC)", 
-                            "Foreign Currency", "Exchange rate of FC to INR", "Realised Value (in INR)", 
-                            "Realised Value (in USD)", "Bank Name", "IFSC Code", "BRC Type", "Edit/ Delete"
-                        ]
-                        
-                        # Filter out hidden columns based on actual visibility
-                        visible_expected_headers = []
-                        for header in expected_headers:
-                            if header not in ["EDI/Non-EDI SB", "ECGC Reimbursed?", "Bank Name", "IFSC Code", "BRC Type"]:
-                                visible_expected_headers.append(header)
-                        
-                        # Check actual data columns
-                        try:
-                            sample_row = self.driver.find_element(By.CSS_SELECTOR, "#sbBankRealiseTbl tbody tr")
-                            # Only get visible cells (not hidden by display: none)
-                            visible_cells = sample_row.find_elements(By.CSS_SELECTOR, "td:not([style*='display: none'])")
-                            actual_columns = len(visible_cells)
-                            print(f"Actual visible data columns: {actual_columns}")
-                            
-                            if actual_columns <= len(visible_expected_headers):
-                                headers = visible_expected_headers[:actual_columns]
-                            else:
-                                headers = visible_expected_headers
-                        except:
-                            headers = visible_expected_headers
-                    
-                    print(f"\nFINAL HEADERS ({len(headers)}):")
-                    for i, header in enumerate(headers):
-                        print(f"  {i+1}. {header}")
-                    
-                    # DATA EXTRACTION
-                    print("\n=== STARTING DATA EXTRACTION ===")
-                    all_data = []
-                    page_count = 1
-                    
-                    while True:
-                        print(f"--- Processing Page {page_count} ---")
-                        
-                        # Wait for table
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#sbBankRealiseTbl tbody")))
-                        time.sleep(2)
-                        
-                        # Get current page rows - only visible rows
-                        current_rows = self.driver.find_elements(By.CSS_SELECTOR, "#sbBankRealiseTbl tbody tr")
-                        print(f"Found {len(current_rows)} rows on page {page_count}")
-                        
-                        if not current_rows:
-                            print("No rows found, stopping...")
-                            break
-                        
-                        page_data = []
-                        for row_idx, row in enumerate(current_rows):
-                            # Only get visible cells (not hidden by display: none)
-                            cells = row.find_elements(By.CSS_SELECTOR, "td:not([style*='display: none'])")
-                            row_data = []
-                            
-                            for cell in cells:
-                                # Check if cell has links
-                                links = cell.find_elements(By.TAG_NAME, "a")
-                                if links:
-                                    cell_text = links[0].text.strip()
-                                else:
-                                    cell_text = cell.text.strip()
-                                row_data.append(cell_text)
-                            
-                            if row_data and any(cell for cell in row_data if cell):  # Only add non-empty rows
-                                page_data.append(row_data)
-                                
-                                # Show first row sample
-                                if row_idx == 0 and page_count == 1:
-                                    print(f"First row sample: {row_data[:5]}...")  # Show first 5 cells
-                        
-                        all_data.extend(page_data)
-                        print(f"Added {len(page_data)} rows from page {page_count}")
-                        
-                        # Check for next page
-                        try:
-                            self.driver.execute_script("window.scrollBy(0, -100);")
-                            self.driver.execute_script("window.scrollBy(0, 100);")
-                            wait.until(EC.presence_of_element_located((By.ID, "sbBankRealiseTbl_next")))
-                            next_button = self.driver.find_element(By.ID, "sbBankRealiseTbl_next")
-                            if "disabled" in next_button.get_attribute("class"):
-                                print("Last page reached")
-                                break
-                            else:
-                                print("Going to next page...")
-                                # Scroll to button and click
-                                self.driver.execute_script("arguments[0].scrollIntoView();", next_button)
-                                time.sleep(1)
-                                self.driver.execute_script("arguments[0].click();", next_button)
-                                
-                                # Wait for page to load
-                                time.sleep(3)
-                                page_count += 1
-                                
-                                # Safety limit
-                                if page_count > 50:
-                                    print("Safety limit reached - stopping after 50 pages")
-                                    break
-                                    
-                        except NoSuchElementException:
-                            print("No next button found")
-                            break
-                        except Exception as e:
-                            print(f"Error clicking next button: {e}")
-                            break
-                    
-                    print(f"\nExtraction complete: {len(all_data)} total rows from {page_count} pages")
-                    
-                    # CREATE DATAFRAME AND SAVE
-                    if all_data:
-                        # Ensure headers match data columns
-                        if len(headers) != len(all_data[0]):
-                            print(f"Adjusting headers: {len(headers)} -> {len(all_data[0])}")
-                            if len(headers) > len(all_data[0]):
-                                headers = headers[:len(all_data[0])]
-                            else:
-                                # Use the headers we have and add generic for missing ones
-                                base_headers = headers.copy()
-                                for i in range(len(headers), len(all_data[0])):
-                                    base_headers.append(f"Column_{i+1}")
-                                headers = base_headers
-                        
-                        df = pd.DataFrame(all_data, columns=headers)
-                        
-                        # Save to Downloads
-                        downloads_path = os.path.expanduser("~/Downloads")
-                        timestamp = time.strftime("%Y%m%d_%H%M%S")
-                        filename = os.path.join(downloads_path, f"EPCG_RealisationDetails_{timestamp}.xlsx")
-                        
-                        df.to_excel(filename, index=False, engine='openpyxl')
-                        print(f"✓ SUCCESS: Bank realization table data saved to: {filename}")
-                        
-                        print("\nFirst 3 rows with actual headers:")
-                        print(df.head(3))
-                        
-                        # Show column information
-                        print(f"\nDataFrame shape: {df.shape}")
-                        print("Column names:")
-                        for col in df.columns:
-                            print(f"  - {col}")
-                        
-                    else:
-                        print("✗ No data extracted from bank realization table")
+                # print("Adv licence start")
+                # my_dashboard = wait.until(
+                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="200928"]/a'))
+                # )
+                # my_dashboard.click()
+                # print("✅ Clicked on my dashboard")
+                # repo = wait.until(
+                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="98000023"]/a'))
+                # )
+                # repo.click()
+                # print("✅ Clicked on repositories")
+    
+                # Bill_repo = wait.until(
+                #     EC.element_to_be_clickable((By.XPATH, '//*[@id="content"]/div[3]/div/div[2]/div[1]/div/a'))
+                # )
+                # Bill_repo.click()
+                # print("✅ Clicked on Bill repositories")
                 
-                except Exception as e:
-                    print(f"✗ ERROR: {e}")
-                    import traceback
-                    traceback.print_exc()
+                # for i in range(2):
+                #     print(i)
+                    
+                #     wait = WebDriverWait(self.driver, 15)
+                #     dropdown = wait.until(EC.element_to_be_clickable((By.ID, "txt_selectBill")))
+                #     dropdown.click()
+                #     time.sleep(1)
 
+                #     if i==0:
+                    
+                #        # Select by visible text using XPath
+                #        option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Shipping Bill']")))
+                #        option.click()
+                #        time.sleep(2)
+                #        print("select shipping bill")
 
-                time.sleep(1)
-                self.driver.refresh()
-                time.sleep(2)
-                self.driver.execute_script("document.body.style.zoom='80%'")
-                time.sleep(0.5)
-                self.driver.execute_script("document.body.style.zoom='60%'")
-                time.sleep(0.5)
-
-                print("Adv licence start")
-                my_dashboard = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="200928"]/a'))
-                )
-                my_dashboard.click()
-                print("✅ Clicked on my dashboard")
-                repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="98000023"]/a'))
-                )
-                repo.click()
-                print("✅ Clicked on repositories")
+                #     else:
+                #         # Select by visible text using XPath
+                #        option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Bill of Entry']")))
+                #        option.click()
+                #        time.sleep(2)
+                #        print("select Bill of Entry")
     
-                Bill_repo = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, '//*[@id="content"]/div[3]/div/div[2]/div[1]/div/a'))
-                )
-                Bill_repo.click()
-                print("✅ Clicked on Bill repositories")
-                
-                for i in range(2):
-                    print(i)
+                #     for idx, row in enumerate(self.excel_data):
+                #         print(row)
                     
-                    wait = WebDriverWait(self.driver, 15)
-                    dropdown = wait.until(EC.element_to_be_clickable((By.ID, "txt_selectBill")))
-                    dropdown.click()
-                    time.sleep(1)
-
-                    if i==0:
+                #         # --- Fix: handle pandas Timestamp directly ---
+                #         shipping_date = row.get("ADV Shipping Bill Date")
+                #         if pd.isna(shipping_date):
+                #             print(f"Skipping Row {idx + 1}: No Shipping Bill Date found")
+                #             continue
                     
-                       # Select by visible text using XPath
-                       option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Shipping Bill']")))
-                       option.click()
-                       time.sleep(2)
-                       print("select shipping bill")
-
-                    else:
-                        # Select by visible text using XPath
-                       option = wait.until(EC.element_to_be_clickable((By.XPATH, "//option[text()='Bill of Entry']")))
-                       option.click()
-                       time.sleep(2)
-                       print("select Bill of Entry")
-    
-                    for idx, row in enumerate(self.excel_data):
-                        print(row)
+                #         # Ensure it's a datetime object
+                #         if isinstance(shipping_date, pd.Timestamp):
+                #             shipping_date = shipping_date.to_pydatetime()
                     
-                        # --- Fix: handle pandas Timestamp directly ---
-                        shipping_date = row.get("ADV Shipping Bill Date")
-                        if pd.isna(shipping_date):
-                            print(f"Skipping Row {idx + 1}: No Shipping Bill Date found")
-                            continue
+                #         shipping_bill_date = shipping_date.strftime("%d/%m/%Y")
+                #         print("Formatted Shipping Bill Date:", shipping_bill_date)
                     
-                        # Ensure it's a datetime object
-                        if isinstance(shipping_date, pd.Timestamp):
-                            shipping_date = shipping_date.to_pydatetime()
+                #         # --- Wait for date field and fill it ---
+                #         wait.until(EC.presence_of_element_located((By.ID, "fromDateOfSelectedBil")))
+                #         print("shown shipping bill date")
                     
-                        shipping_bill_date = shipping_date.strftime("%d/%m/%Y")
-                        print("Formatted Shipping Bill Date:", shipping_bill_date)
+                #         self.driver.execute_script(f"""
+                #             var fromDate = document.getElementById('fromDateOfSelectedBil');
+                #             fromDate.value = '{shipping_bill_date}';
+                #             fromDate.dispatchEvent(new Event('change'));
+                #         """)
                     
-                        # --- Wait for date field and fill it ---
-                        wait.until(EC.presence_of_element_located((By.ID, "fromDateOfSelectedBil")))
-                        print("shown shipping bill date")
-                    
-                        self.driver.execute_script(f"""
-                            var fromDate = document.getElementById('fromDateOfSelectedBil');
-                            fromDate.value = '{shipping_bill_date}';
-                            fromDate.dispatchEvent(new Event('change'));
-                        """)
-                    
-                        time.sleep(1)
+                #         time.sleep(1)
 
                         
 
                     
-                        # --- Fill Authorisation Number ---
-                        auth_no = str(row.get("ADV Authorisation Number", "")).strip()
-                        if i==0:
-                            self.driver.find_element(By.ID, "authorisationNo").clear()
-                            self.driver.find_element(By.ID, "authorisationNo").send_keys(auth_no)
-                        else:
-                            self.driver.find_element(By.ID, "boeLicenseNumber").clear()
-                            self.driver.find_element(By.ID, "boeLicenseNumber").send_keys(auth_no)
+                #         # --- Fill Authorisation Number ---
+                #         auth_no = str(row.get("ADV Authorisation Number", "")).strip()
+                #         if i==0:
+                #             self.driver.find_element(By.ID, "authorisationNo").clear()
+                #             self.driver.find_element(By.ID, "authorisationNo").send_keys(auth_no)
+                #         else:
+                #             self.driver.find_element(By.ID, "boeLicenseNumber").clear()
+                #             self.driver.find_element(By.ID, "boeLicenseNumber").send_keys(auth_no)
                         
 
-                        print("add authorisation number")
-                        time.sleep(1)
+                #         print("add authorisation number")
+                #         time.sleep(1)
                     
-                        # --- Click Search ---
-                        search = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="repSearchBtn"]')))
+                #         # --- Click Search ---
+                #         search = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="repSearchBtn"]')))
                         
-                        search.click()
-                        print("✅ Clicked search")
+                #         search.click()
+                #         print("✅ Clicked search")
 
-                        if i==0:
+                #         if i==0:
     
-                            # --- Wait for table to appear ---
-                            wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable")))
-                            print("table shown")
+                #             # --- Wait for table to appear ---
+                #             wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable")))
+                #             print("table shown")
                             
-                            all_rows = []
+                #             all_rows = []
                             
-                            while True:
-                                # Wait for the table body to load
-                                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billRepositoryTable tbody tr")))
+                #             while True:
+                #                 # Wait for the table body to load
+                #                 wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billRepositoryTable tbody tr")))
                             
-                                rows = self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable tbody tr")
-                                print(f"Found {len(rows)} rows on this page")
+                #                 rows = self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable tbody tr")
+                #                 print(f"Found {len(rows)} rows on this page")
                             
-                                for r in rows:
-                                    cols = r.find_elements(By.TAG_NAME, "td")
-                                    if len(cols) > 1:  # skip "No data available" row
-                                        data = [c.text.strip() for c in cols]
-                                        all_rows.append(data)
+                #                 for r in rows:
+                #                     cols = r.find_elements(By.TAG_NAME, "td")
+                #                     if len(cols) > 1:  # skip "No data available" row
+                #                         data = [c.text.strip() for c in cols]
+                #                         all_rows.append(data)
                             
-                                # Try to find "Next" button and check if it is enabled
-                                try:
-                                    self.driver.execute_script("window.scrollBy(0, -100);")
-                                    self.driver.execute_script("window.scrollBy(0, 100);")
-                                    wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable_next")))
-                                    next_btn = self.driver.find_element(By.ID, "billRepositoryTable_next")
-                                    next_class = next_btn.get_attribute("class")
-                                    if "disabled" in next_class:
-                                        print("✅ No more pages. Extraction complete.")
-                                        break
-                                    else:
-                                        self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
-                                        next_btn.click()
-                                        time.sleep(2)  # Wait for next page data to load
-                                except Exception as e:
-                                    print("⚠️ Pagination ended or not found:", e)
-                                    break
+                #                 # Try to find "Next" button and check if it is enabled
+                #                 try:
+                #                     self.driver.execute_script("window.scrollBy(0, -100);")
+                #                     self.driver.execute_script("window.scrollBy(0, 100);")
+                #                     wait.until(EC.presence_of_element_located((By.ID, "billRepositoryTable_next")))
+                #                     next_btn = self.driver.find_element(By.ID, "billRepositoryTable_next")
+                #                     next_class = next_btn.get_attribute("class")
+                #                     if "disabled" in next_class:
+                #                         print("✅ No more pages. Extraction complete.")
+                #                         break
+                #                     else:
+                #                         self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+                #                         next_btn.click()
+                #                         time.sleep(2)  # Wait for next page data to load
+                #                 except Exception as e:
+                #                     print("⚠️ Pagination ended or not found:", e)
+                #                     break
                             
-                            # --- Extract headers ---
-                            headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable thead th")]
+                #             # --- Extract headers ---
+                #             headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billRepositoryTable thead th")]
                             
-                            # --- Save to Excel ---
-                            # --- Save to Local Downloads Folder ---
-                            downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
-                            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                            filename = f"ADV_shipping_bill_Data_{timestamp}.xlsx"
-                            file_path = os.path.join(downloads_path, filename)                    
+                #             # --- Save to Excel ---
+                #             # --- Save to Local Downloads Folder ---
+                #             downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+                #             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                #             filename = f"ADV_shipping_bill_Data_{timestamp}.xlsx"
+                #             file_path = os.path.join(downloads_path, filename)                    
         
-                            df = pd.DataFrame(all_rows, columns=headers)
-                            df.to_excel(file_path, index=False)                    
+                #             df = pd.DataFrame(all_rows, columns=headers)
+                #             df.to_excel(file_path, index=False)                    
         
-                            print(f"💾 Data saved to: {file_path}")
+                #             print(f"💾 Data saved to: {file_path}")
 
-                        else:
-                                                        # --- Wait for Bill of Entry table to load ---
-                            wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable")))
+                #         else:
+                #                                         # --- Wait for Bill of Entry table to load ---
+                #             wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable")))
                             
-                            all_rows = []
+                #             all_rows = []
                             
-                            while True:
-                                # Wait for "Processing..." to disappear
-                                try:
-                                    wait.until_not(EC.visibility_of_element_located((By.ID, "billOfEntryTable_processing")))
-                                except:
-                                    pass
+                #             while True:
+                #                 # Wait for "Processing..." to disappear
+                #                 try:
+                #                     wait.until_not(EC.visibility_of_element_located((By.ID, "billOfEntryTable_processing")))
+                #                 except:
+                #                     pass
                             
-                                # Wait for table rows
-                                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billOfEntryTable tbody tr")))
+                #                 # Wait for table rows
+                #                 wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#billOfEntryTable tbody tr")))
                             
-                                rows = self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable tbody tr")
-                                print(f"Found {len(rows)} rows on this page")
+                #                 rows = self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable tbody tr")
+                #                 print(f"Found {len(rows)} rows on this page")
                             
-                                for r in rows:
-                                    cols = r.find_elements(By.TAG_NAME, "td")
-                                    if len(cols) > 1:  # skip "No data available"
-                                        data = [c.text.strip() for c in cols]
-                                        all_rows.append(data)
+                #                 for r in rows:
+                #                     cols = r.find_elements(By.TAG_NAME, "td")
+                #                     if len(cols) > 1:  # skip "No data available"
+                #                         data = [c.text.strip() for c in cols]
+                #                         all_rows.append(data)
                             
-                                # --- Handle Pagination ---
-                                try:
-                                    self.driver.execute_script("window.scrollBy(0, -100);")
-                                    self.driver.execute_script("window.scrollBy(0, 100);")
-                                    wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
-                                    next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
-                                    next_class = next_btn.get_attribute("class")
-                                    if "disabled" in next_class:
-                                        print("✅ No more pages. Extraction complete.")
-                                        break
-                                    else:
-                                        self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
-                                        next_btn.click()
-                                        time.sleep(2)  # allow table to refresh
-                                except Exception as e:
-                                    print("⚠️ Pagination ended or not found:", e)
-                                    break
+                #                 # --- Handle Pagination ---
+                #                 try:
+                #                     self.driver.execute_script("window.scrollBy(0, -100);")
+                #                     self.driver.execute_script("window.scrollBy(0, 100);")
+                #                     wait.until(EC.presence_of_element_located((By.ID, "billOfEntryTable_next")))
+                #                     next_btn = self.driver.find_element(By.ID, "billOfEntryTable_next")
+                #                     next_class = next_btn.get_attribute("class")
+                #                     if "disabled" in next_class:
+                #                         print("✅ No more pages. Extraction complete.")
+                #                         break
+                #                     else:
+                #                         self.driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
+                #                         next_btn.click()
+                #                         time.sleep(2)  # allow table to refresh
+                #                 except Exception as e:
+                #                     print("⚠️ Pagination ended or not found:", e)
+                #                     break
                             
-                            # --- Extract Table Headers ---
-                            headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable thead th")]
+                #             # --- Extract Table Headers ---
+                #             headers = [h.text.strip() for h in self.driver.find_elements(By.CSS_SELECTOR, "#billOfEntryTable thead th")]
                             
-                            # --- Save to Local Downloads Folder ---
-                            downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
-                            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                            filename = f"ADV_BillOfEntry_Data_{timestamp}.xlsx"
-                            file_path = os.path.join(downloads_path, filename)
+                #             # --- Save to Local Downloads Folder ---
+                #             downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+                #             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                #             filename = f"ADV_BillOfEntry_Data_{timestamp}.xlsx"
+                #             file_path = os.path.join(downloads_path, filename)
                             
-                            df = pd.DataFrame(all_rows, columns=headers)
-                            df.to_excel(file_path, index=False)
+                #             df = pd.DataFrame(all_rows, columns=headers)
+                #             df.to_excel(file_path, index=False)
                             
-                            print(f"💾 Data saved to: {file_path}")
+                #             print(f"💾 Data saved to: {file_path}")
 
                 time.sleep(1)
 
@@ -1501,6 +1514,66 @@ class CertificateBot:
                 time.sleep(0.5)
                 # self.driver.execute_script("document.body.style.zoom='100%'")
                 # time.sleep(0.5)
+
+                # advance licence at CIP ad endorsed 
+                time.sleep(0.5)
+                wait = WebDriverWait(self.driver, 15)
+                
+                # --- Locate the main table ---
+                table = wait.until(
+                    EC.presence_of_element_located((By.ID, "exportEndorsedTbl"))
+                )
+                
+                all_rows = []
+                time.sleep(0.5)
+                self.driver.execute_script("document.body.click();")
+                
+                # --- Extract all pages ---
+                while True:
+                    # Extract headers only once
+                    headers = [th.text.strip() for th in table.find_elements(By.TAG_NAME, "th")]
+                
+                    # Extract body rows
+                    body_rows = table.find_elements(By.TAG_NAME, "tr")[1:]
+                    for r in body_rows:
+                        cells = [td.text.strip() for td in r.find_elements(By.TAG_NAME, "td")]
+                        if cells:
+                            all_rows.append(cells)
+                
+                    # --- Pagination: click next page ---
+                    try:
+                        next_btn = wait.until(
+                            EC.presence_of_element_located((By.ID, "exportEndorsedTbl_next"))
+                        )
+                
+                        # If disabled → last page
+                        if "disabled" in next_btn.get_attribute("class"):
+                            break
+                
+                        # Scroll small up/down to avoid overlay issues
+                        self.driver.execute_script("window.scrollBy(0, -150);")
+                        self.driver.execute_script("window.scrollBy(0, 150);")
+                
+                        next_btn.click()
+                        time.sleep(1.2)
+                
+                        # Re-fetch table after pagination change
+                        table = self.driver.find_element(By.ID, "exportEndorsedTbl")
+                
+                    except Exception as e:
+                        break
+                
+                # --- Save in Downloads folder ---
+                downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"EXPORT_ENDORSED_DATA_{timestamp}.xlsx"
+                file_path = os.path.join(downloads_path, filename)
+                
+                df = pd.DataFrame(all_rows, columns=headers)
+                df.to_excel(file_path, index=False)
+                
+                print(f"💾 Export Endorsed Table Saved: {file_path}")
+
                 # self.driver.execute_script("document.body.style.zoom='50%'")
                 time.sleep(0.5)
                 wait = WebDriverWait(self.driver, 15)
